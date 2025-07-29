@@ -205,12 +205,18 @@
 
 .mod_kanban_assigned_user.btn {
     cursor: inherit;
+    border-radius: 100%;
 }
 
 .mod_kanban_assigned_user:not(:first-of-type) {
     position: relative;
     margin-left: -20px;
 }
+
+.mod_kanban_assigned_user.btn span{
+    margin-right: 0;
+}
+
 
 .row > .mod_kanban_addcolumn_first {
     list-style: none;
