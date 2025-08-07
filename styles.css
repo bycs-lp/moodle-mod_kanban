@@ -77,11 +77,10 @@
     position: absolute;
     min-height: 100px;
     height: 100%;
+    width: 10px;
 }
 
 .mod_kanban_addcolumn_container.col * {
-    position: absolute;
-    transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 0.1s;
 }
@@ -188,10 +187,11 @@
 }
 
 :not(.mod_kanban_description_modal) > .mod_kanban_assignees {
-    position: absolute;
+    position: relative;
     bottom: 10px;
     left: 12px;
     max-width: 14rem;
+    min-height: 1rem;
 }
 
 .mod_kanban_assignees {
@@ -206,6 +206,7 @@
 
 .mod_kanban_assigned_user.btn {
     cursor: inherit;
+    border-radius: 100%;
 }
 
 .mod_kanban_assigned_user:not(:first-of-type) {
@@ -213,7 +214,12 @@
     margin-left: -20px;
 }
 
-.mod_kanban_addcolumn_first {
+.mod_kanban_assigned_user.btn span {
+    margin-right: 0;
+}
+
+
+.row > .mod_kanban_addcolumn_first {
     list-style: none;
     width: 10px;
 }
@@ -264,6 +270,7 @@
 .card-footer.mod_kanban_card_footer {
     background-color: transparent;
     border-top: 0;
+    padding: 0;
 }
 
 a.mod_kanban_attachment_item {
@@ -402,7 +409,7 @@ a.mod_kanban_attachment_item {
 }
 
 .mod_kanban_column_container.row {
-    margin-left: -30px;
+    margin-left: -10px;
 }
 
 .mod_kanban_scroll.row {

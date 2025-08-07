@@ -26,7 +26,7 @@ export default {
     ADDCARDFIRST: `.mod_kanban_addcard_first`,
     ADDCOLUMN: `[data-action="add_column"]`,
     ADDCOLUMNCONTAINER: `.mod_kanban_addcolumn_container`,
-    ADDCOLUMNFIRST: `.mod_kanban_addcolumn_first`,
+    ADDCOLUMNFIRST: `.mod_kanban_addcolumn_first [data-action="add_column"]`,
     ASSIGNEES: `.mod_kanban_assignees`,
     ASSIGNSELF: `[data-action="assign_self"]`,
     ASSIGNUSER: `[data-action="assign_user"]`,
