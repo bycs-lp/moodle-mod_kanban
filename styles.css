@@ -187,10 +187,11 @@
 }
 
 :not(.mod_kanban_description_modal) > .mod_kanban_assignees {
-    position: absolute;
+    position: relative;
     bottom: 10px;
     left: 12px;
     max-width: 14rem;
+    min-height: 1rem;
 }
 
 .mod_kanban_assignees {
@@ -269,6 +270,7 @@
 .card-footer.mod_kanban_card_footer {
     background-color: transparent;
     border-top: 0;
+    padding: 0;
 }
 
 a.mod_kanban_attachment_item {
