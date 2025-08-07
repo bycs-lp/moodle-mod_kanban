@@ -28,37 +28,37 @@
     <button class="mod_kanban_action_menu_trigger btn btn-icon icon-no-margin p-0 dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">{{#pix}} i/menu, core, {{#str}} editcard, mod_kanban {{/str}} {{/pix}}</button>
     <ul class="dropdown-menu dropdown-menu-right">
         <li class="nav-item mod_kanban_assign_self">
-            <a class="dropdown-item" href="#" data-action="assign_self" data-id="{{id}}">{{#pix}} t/user, core, {{#str}} assignme, mod_kanban{{/str}} {{/pix}}{{#str}} assignme, mod_kanban{{/str}}</a>
+            <a class="dropdown-item" data-action="assign_self" data-id="{{id}}">{{#pix}} t/user, core, {{#str}} assignme, mod_kanban{{/str}} {{/pix}}{{#str}} assignme, mod_kanban{{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_unassign_self">
-            <a class="dropdown-item" href="#" data-action="unassign_self" data-id="{{id}}">{{#pix}} t/removecontact, core, {{#str}} unassignme, mod_kanban{{/str}} {{/pix}}{{#str}} unassignme, mod_kanban{{/str}}</a>
+            <a class="dropdown-item" data-action="unassign_self" data-id="{{id}}">{{#pix}} t/removecontact, core, {{#str}} unassignme, mod_kanban{{/str}} {{/pix}}{{#str}} unassignme, mod_kanban{{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_move_card">
-            <a class="dropdown-item" href="#" data-action="move_card" data-id="{{id}}">{{#pix}} i/move_2d, core, {{#str}} move, core {{/str}} {{/pix}}{{#str}} move, core {{/str}}</a>
+            <a class="dropdown-item" data-action="move_card" data-id="{{id}}">{{#pix}} i/move_2d, core, {{#str}} move, core {{/str}} {{/pix}}{{#str}} move, core {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_duplicate_card">
-            <a class="dropdown-item" href="#" data-action="duplicate_card" data-id="{{id}}">{{#pix}} e/copy, core, {{#str}} duplicate, core {{/str}} {{/pix}}{{#str}} duplicate, core {{/str}}</a>
+            <a class="dropdown-item" data-action="duplicate_card" data-id="{{id}}">{{#pix}} e/copy, core, {{#str}} duplicate, core {{/str}} {{/pix}}{{#str}} duplicate, core {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_complete_card">
-            <a class="dropdown-item" href="#" data-action="complete_card" data-id="{{id}}">{{#pix}} t/check, core, {{#str}} complete, core {{/str}} {{/pix}}{{#str}} complete, core {{/str}}</a>
+            <a class="dropdown-item" data-action="complete_card" data-id="{{id}}">{{#pix}} t/check, core, {{#str}} complete, core {{/str}} {{/pix}}{{#str}} complete, core {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_uncomplete_card">
-            <a class="dropdown-item" href="#" data-action="uncomplete_card" data-id="{{id}}">{{#pix}} t/reload, core, {{#str}} uncomplete, mod_kanban {{/str}} {{/pix}}{{#str}} uncomplete, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="uncomplete_card" data-id="{{id}}">{{#pix}} t/reload, core, {{#str}} uncomplete, mod_kanban {{/str}} {{/pix}}{{#str}} uncomplete, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_start_discussion">
-            <a class="dropdown-item" href="#" data-action="show_discussion" data-id="{{id}}" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_discussion_modal_{{id}}" data-target="#mod_kanban_discussion_modal_{{id}}">{{#pix}} t/messages, core, {{#str}} startdiscussion, mod_kanban {{/str}} {{/pix}}{{#str}} startdiscussion, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="show_discussion" data-id="{{id}}" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_discussion_modal_{{id}}" data-target="#mod_kanban_discussion_modal_{{id}}">{{#pix}} t/messages, core, {{#str}} startdiscussion, mod_kanban {{/str}} {{/pix}}{{#str}} startdiscussion, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_card_edit_details">
-            <a class="dropdown-item" href="#" data-action="edit_details" data-id="{{id}}">{{#pix}} t/edit, core, {{#str}} editdetails, mod_kanban {{/str}} {{/pix}}{{#str}} editdetails, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="edit_details" data-id="{{id}}">{{#pix}} t/edit, core, {{#str}} editdetails, mod_kanban {{/str}} {{/pix}}{{#str}} editdetails, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_card_view_history">
-            <a class="dropdown-item" href="#" data-action="show_history" data-id="{{id}}" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_history_modal_{{id}}" data-target="#mod_kanban_history_modal_{{id}}">{{#pix}} i/duration, core, {{#str}} history, mod_kanban {{/str}} {{/pix}}{{#str}} history, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="show_history" data-id="{{id}}" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_history_modal_{{id}}" data-target="#mod_kanban_history_modal_{{id}}">{{#pix}} i/duration, core, {{#str}} history, mod_kanban {{/str}} {{/pix}}{{#str}} history, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_push_card">
-            <a class="dropdown-item" href="#" data-action="push_card" data-id="{{id}}">{{#pix}} t/copy, core, {{#str}} pushcard, mod_kanban {{/str}} {{/pix}}{{#str}} pushcard, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="push_card" data-id="{{id}}">{{#pix}} t/copy, core, {{#str}} pushcard, mod_kanban {{/str}} {{/pix}}{{#str}} pushcard, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_delete_card">
-            <a class="dropdown-item text-danger" href="#" data-action="delete_card" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
+            <a class="dropdown-item text-danger" data-action="delete_card" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
         </li>
     </ul>
 </div>

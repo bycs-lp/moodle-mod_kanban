@@ -31,16 +31,16 @@
     <button class="mod_kanban_action_menu_trigger btn btn-icon icon-no-margin p-0 dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">{{#pix}} i/menu, core, {{#str}} editcolumn, mod_kanban {{/str}} {{/pix}}</button>
     <ul class="dropdown-menu dropdown-menu-right">
         <li class="nav-item mod_kanban_lock_column">
-            <a class="dropdown-item" href="#" data-action="lock_column" data-id="{{id}}">{{#pix}} t/lock, core, {{#str}} lock, mod_kanban {{/str}} {{/pix}}{{#str}} lock, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="lock_column" data-id="{{id}}">{{#pix}} t/lock, core, {{#str}} lock, mod_kanban {{/str}} {{/pix}}{{#str}} lock, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_unlock_column">
-            <a class="dropdown-item" href="#" data-action="unlock_column" data-id="{{id}}">{{#pix}} t/unlock, core, {{#str}} unlock, mod_kanban {{/str}} {{/pix}}{{#str}} unlock, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="unlock_column" data-id="{{id}}">{{#pix}} t/unlock, core, {{#str}} unlock, mod_kanban {{/str}} {{/pix}}{{#str}} unlock, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item">
-            <a class="dropdown-item" href="#" data-action="edit_details" data-id="{{id}}">{{#pix}} t/edit, core, {{#str}} editdetails, mod_kanban {{/str}} {{/pix}}{{#str}} editdetails, mod_kanban {{/str}}</a>
+            <a class="dropdown-item" data-action="edit_details" data-id="{{id}}">{{#pix}} t/edit, core, {{#str}} editdetails, mod_kanban {{/str}} {{/pix}}{{#str}} editdetails, mod_kanban {{/str}}</a>
         </li>
         <li class="nav-item mod_kanban_delete_column">
-            <a class="dropdown-item text-danger" href="#" data-action="delete_column" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
+            <a class="dropdown-item text-danger" data-action="delete_column" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} delete, core {{/str}} {{/pix}}{{#str}} delete, core {{/str}}</a>
         </li>
     </ul>
 </div>
