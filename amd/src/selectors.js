@@ -82,6 +82,7 @@ export default {
     SHOWBOARD: `[data-action="show_board"]`,
     SHOWHIDDEN: `[data-action="show_hidden"]`,
     SHOWTEMPLATE: `[data-action="show_template"]`,
+    SHOWDISCUSSION: `[data-action="show_discussion"]`,
     UNASSIGNSELF: `[data-action="unassign_self"]`,
     UNASSIGNUSER: `[data-action="unassign_user"]`,
     UNCOMPLETE: `[data-action="uncomplete_card"]`,
