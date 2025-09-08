@@ -382,6 +382,7 @@ a.mod_kanban_attachment_item {
 
 .col.mod_kanban_heading {
     max-width: max-content;
+    position: relative;
 }
 
 .mod_kanban_heading .mod_kanban_action_menu_trigger {
