@@ -42,31 +42,31 @@
 <ul class="dropdown-menu dropdown-menu-left">
     {{#manageboard}}
     <li class="nav-item mod_kanban_lock_board_columns">
-        <a class="dropdown-item" href="#" data-action="lock_board_columns" data-id="{{id}}">{{#pix}} t/lock, core, {{#str}} lockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} lockboardcolumns, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-action="lock_board_columns" data-id="{{id}}">{{#pix}} t/lock, core, {{#str}} lockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} lockboardcolumns, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_unlock_board_columns">
-        <a class="dropdown-item" href="#" data-action="unlock_board_columns" data-id="{{id}}">{{#pix}} t/unlock, core, {{#str}} unlockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} unlockboardcolumns, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-action="unlock_board_columns" data-id="{{id}}">{{#pix}} t/unlock, core, {{#str}} unlockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} unlockboardcolumns, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_create_template">
-        <a class="dropdown-item" href="#" data-action="create_template" data-id="{{id}}">{{#pix}} t/clipboard, core, {{#str}} createtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} createtemplate, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-action="create_template" data-id="{{id}}">{{#pix}} t/clipboard, core, {{#str}} createtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} createtemplate, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_show_template">
-        <a class="dropdown-item" href="#" data-action="show_template" data-id="{{id}}">{{#pix}} i/publish, core, {{#str}} showtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} showtemplate, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-action="show_template" data-id="{{id}}">{{#pix}} i/publish, core, {{#str}} showtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} showtemplate, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_delete_template">
-        <a class="dropdown-item text-danger" href="#" data-action="delete_template" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deletetemplate, mod_kanban {{/str}} {{/pix}}{{#str}} deletetemplate, mod_kanban {{/str}}</a>
+        <a class="dropdown-item text-danger" data-action="delete_template" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deletetemplate, mod_kanban {{/str}} {{/pix}}{{#str}} deletetemplate, mod_kanban {{/str}}</a>
     </li>
     {{/manageboard}}
     <li class="nav-item mod_kanban_show_board">
         <a class="dropdown-item" href="view.php?id={{cmid}}&group=0&user=0">{{#pix}} t/left, core, {{#str}} showboard, mod_kanban {{/str}} {{/pix}}{{#str}} showboard, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_delete_board">
-        <a class="dropdown-item text-danger" href="#" data-action="delete_board" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deleteboard, mod_kanban {{/str}} {{/pix}}{{#str}} deleteboard, mod_kanban {{/str}}</a>
+        <a class="dropdown-item text-danger" data-action="delete_board" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deleteboard, mod_kanban {{/str}} {{/pix}}{{#str}} deleteboard, mod_kanban {{/str}}</a>
     </li>
     {{#groupmode}}
     {{#groupselector}}
     <li class="nav-item mod_kanban_select_group">
-        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_change_group" data-target="#mod_kanban_change_group">{{#pix}} i/group, core, {{#str}} changegroup, mod_kanban {{/str}} {{/pix}}{{#str}} changegroup, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_change_group" data-target="#mod_kanban_change_group">{{#pix}} i/group, core, {{#str}} changegroup, mod_kanban {{/str}} {{/pix}}{{#str}} changegroup, mod_kanban {{/str}}</a>
     </li>
     {{/groupselector}}
     {{/groupmode}}
@@ -78,7 +78,7 @@
     {{/ismyuserboard}}
     {{#viewallboards}}
     <li class="nav-item mod_kanban_select_user">
-        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_change_user" data-target="#mod_kanban_change_user">{{#pix}} t/user, core, {{#str}} changeuser, mod_kanban {{/str}} {{/pix}}{{#str}} changeuser, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_change_user" data-target="#mod_kanban_change_user">{{#pix}} t/user, core, {{#str}} changeuser, mod_kanban {{/str}} {{/pix}}{{#str}} changeuser, mod_kanban {{/str}}</a>
     </li>
     {{/viewallboards}}
     {{/userboards}}
