@@ -202,6 +202,7 @@ $string['topofcolumn'] = 'Top of column';
 $string['unassign'] = 'Unassign this user';
 $string['unassignme'] = 'Unassign me';
 $string['uncomplete'] = 'Reopen';
+$string['uncompletedassignedcards'] = 'Uncompleted cards assigned to you';
 $string['unlock'] = 'Unlock';
 $string['unlockboardcolumns'] = 'Unlock board columns';
 $string['usenumbers'] = 'Use card numbers';
