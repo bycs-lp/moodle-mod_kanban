@@ -25,6 +25,7 @@ export default class extends BaseComponent {
     create() {
         this.cmid = this.element.dataset.cmid;
         this.id = this.element.dataset.id;
+        this.cardid = this.element.dataset.cardid;
     }
 
     /**
@@ -36,7 +37,20 @@ export default class extends BaseComponent {
             this.getElement(),
             'mod_kanban/board',
             exporter.exportStateForTemplate(state),
-        ).catch(error => {
+        ).then(() => {
+            if (this.cardid) {
+                const cardelement = document.getElementById(`mod_kanban_card-${this.cardid}`);
+                if (cardelement) {
+                    cardelement.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    cardelement.classList.add('mod_kanban_highlighted_card');
+                    cardelement.focus();
+                    setTimeout(() => {
+                        cardelement.classList.remove('mod_kanban_highlighted_card');
+                    }, 10000);
+                }
+            }
+            return true;
+        }).catch(error => {
             Log.debug(error);
         });
     }
