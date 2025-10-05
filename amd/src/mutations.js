@@ -362,4 +362,17 @@ export default class {
     async duplicateCard(stateManager, cardId) {
         await this._sendChange('duplicate_card', stateManager, {cardid: cardId});
     }
+
+    /**
+     * Set a card as highlighted.
+     * @param {*} stateManager StateManager instance.
+     * @param {number} cardId Id of the card to highlight.
+     * @param {boolean} value Whether to highlight or unhighlight the card (defaults to true).
+     */
+    setHighlightedCard(stateManager, cardId, value = true) {
+        const state = stateManager.state;
+        stateManager.setReadOnly(false);
+        state.cards.get(cardId).highlighted = value;
+        stateManager.setReadOnly(true);
+    }
 }

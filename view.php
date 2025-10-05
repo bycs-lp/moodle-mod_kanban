@@ -33,6 +33,7 @@ use mod_kanban\helper;
 $id = required_param('id', PARAM_INT);
 $boardid = optional_param('boardid', 0, PARAM_INT);
 $userid = optional_param('user', 0, PARAM_INT);
+$cardid = optional_param('cardid', 0, PARAM_INT);
 
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'kanban');
 
@@ -72,6 +73,14 @@ if (!empty($userid)) {
     $groupid = 0;
 }
 
+if (!empty($cardid)) {
+    $boardidforcard = $DB->get_field('kanban_card', 'kanban_board', ['id' => $cardid], MUST_EXIST);
+    if (!empty($boardid) && $boardid != $boardidforcard) {
+        throw new moodle_exception('invalidcardboardcombination', 'mod_kanban');
+    }
+    $boardid = $boardidforcard;
+}
+
 if (empty($boardid)) {
     $board = $DB->get_record(
         'kanban_board',
@@ -104,6 +113,7 @@ echo $OUTPUT->render_from_template(
     [
         'cmid' => $cm->id,
         'id' => $boardid,
+        'cardid' => $cardid,
     ]
 );
 

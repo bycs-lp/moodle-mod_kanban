@@ -1453,4 +1453,22 @@ class boardmanager {
     public function get_instance(): stdClass {
         return $this->kanban;
     }
+
+    /**
+     * Returns all uncompleted cards assigned to a user on this board.
+     *
+     * @param int $userid Id of the user
+     * @return array Array of card records
+     */
+    public function get_uncompleted_assigned_cards(int $userid): array {
+        global $DB;
+        $sql = "SELECT c.*
+            FROM {kanban_card} c
+            JOIN {kanban_board} b ON b.id = c.kanban_board AND b.kanban_instance = :instance
+            JOIN {kanban_assignee} a ON a.kanban_card = c.id
+            WHERE a.userid = :userid AND c.completed = 0
+            ORDER BY c.timemodified DESC";
+        $params = ['userid' => $userid, 'instance' => $this->kanban->id];
+        return $DB->get_records_sql($sql, $params);
+    }
 }

@@ -1,5 +1,5 @@
 {{!
-    This file is part of Moodle - https://moodle.org/
+    This file is part of Moodle - http://moodle.org/
 
     Moodle is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,15 +15,29 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_kanban/container
+    @template mod_kanban/assigneduncompletedcards
+
+    TODO describe template assigneduncompletedcards
 
     Example context (json):
     {
         "cmid": 5,
-        "id": 1,
-        "cardid": 3
+        "cards": [
+            {
+                "url": "http://localhost/moodle/mod/kanban/view.php?id=5&cardid=3",
+                "title": "My first card"
+            },
+            {
+                "url": "http://localhost/moodle/mod/kanban/view.php?id=5&cardid=4",
+                "title": "My second card"
+            }
+        ]
     }
 }}
-<div id="mod_kanban_render_container-{{cmid}}" class="mod_kanban_render_container container-fluid" data-cmid="{{cmid}}" data-id="{{id}}" data-cardid="{{cardid}}">
-    {{>mod_kanban/loadingplaceholder}}
-</div>
+<ul>
+{{#cards}}
+    <li>
+        <a href="{{{url}}}">{{{title}}}</a>
+    </li>
+{{/cards}}
+</ul>
