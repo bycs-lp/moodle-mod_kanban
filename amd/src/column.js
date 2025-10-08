@@ -245,6 +245,8 @@ export default class extends KanbanComponent {
             const newcomponent = await this.renderComponent(placeholder, 'mod_kanban/card', data);
             const newelement = newcomponent.getElement();
             node.replaceChild(newelement, placeholder);
+            // Update card count after adding new card
+            this.getElement(selectors.CARDCOUNT).innerHTML = this.getElements(selectors.CARD).length;
         }
     }
 
@@ -304,6 +306,7 @@ export default class extends KanbanComponent {
             this.toggleClass(options.wiplimit > 0, 'mod_kanban_column_wiplimit');
             this.getElement(selectors.WIPLIMIT).innerHTML = options.wiplimit;
         }
+        // Update card count after updating column
         this.getElement(selectors.CARDCOUNT).innerHTML = this.getElements(selectors.CARD).length;
         // Enable/disable dragging (e.g. if column is locked).
         this.checkDragging();
