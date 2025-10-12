@@ -1108,6 +1108,7 @@ class boardmanager {
             'autoclose' => !empty($data['autoclose']),
             'autohide' => !empty($data['autohide']),
             'wiplimit' => empty($data['wiplimitenable']) ? 0 : $data['wiplimit'],
+            'addcardshere' => !empty($data['addcardshere']),
         ];
         if (isset($data['title'])) {
             $data['title'] = s($data['title']);
@@ -1124,6 +1125,9 @@ class boardmanager {
         $this->formatter->put('columns', $columndata);
 
         helper::update_cached_timestamp($this->board->id, constants::MOD_KANBAN_COLUMN, $columndata['timemodified']);
+
+        $hasaddcards = $this->has_addcards();
+        $this->formatter->put('board', ['id' => $this->board->id, 'timemodified' => time(), 'hasaddcards' => $hasaddcards]);
 
         if ($column->title != $columndata['title']) {
             $this->write_history('updated', constants::MOD_KANBAN_COLUMN, $columndata, $columnid);
@@ -1470,5 +1474,27 @@ class boardmanager {
             ORDER BY c.timemodified DESC";
         $params = ['userid' => $userid, 'instance' => $this->kanban->id];
         return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Checks whether there is at least one column where addcards option is set.
+     *
+     * @param array $columns Array of columns to check to prevent extra db query
+     * @return boolean
+     */
+    public function has_addcards(array $columns = []): bool {
+        global $DB;
+        if (empty($columns)) {
+            $columns = $DB->get_records('kanban_column', ['kanban_board' => $this->board->id], '', 'id, options');
+        }
+
+        foreach ($columns as $column) {
+            $columnoptions = json_decode($column->options);
+            if (!empty($columnoptions->addcardshere)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

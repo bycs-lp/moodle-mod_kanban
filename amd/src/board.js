@@ -275,6 +275,9 @@ export default class extends KanbanComponent {
         // Set CSS classes to show/hide action menu items.
         this.toggleClass(element.locked, 'mod_kanban_board_locked_columns');
         this.toggleClass(element.hastemplate, 'mod_kanban_hastemplate');
+        if (element.hasaddcards !== undefined) {
+            this.toggleClass(element.hasaddcards, 'mod_kanban_hasaddcards');
+        }
         this._updateScrollButtons();
     }
 

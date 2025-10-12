@@ -70,6 +70,7 @@ export default class {
             iscourseboard: state.board.userid == 0 && state.board.groupid == 0 && state.board.template == 0,
             users: JSON.parse(JSON.stringify(state.users)),
             usenumbers: state.common.usenumbers,
+            hasaddcards: state.board.hasaddcards ?? false,
         }, this.exportCapabilities(state));
     }
 
@@ -90,6 +91,7 @@ export default class {
         col.hascards = col.sequence != '';
         col.autoclose = options.autoclose;
         col.autohide = options.autohide;
+        col.addcardshere = options.addcardshere ?? false;
         if (options.wiplimit > 0) {
             col.wiplimit = options.wiplimit;
         }

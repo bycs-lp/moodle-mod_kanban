@@ -28,10 +28,16 @@
         "autohide": true,
         "locked": false,
         "wiplimit": 5,
-        "cardcount": 12
+        "cardcount": 12,
+        "addcardshere": true,
     }
 }}
-<li class="mod_kanban_column col card{{#autohide}} mod_kanban_autohide{{/autohide}} {{#locked}}mod_kanban_locked_column{{/locked}} {{#wiplimit}}mod_kanban_column_wiplimit{{/wiplimit}}" id="mod_kanban_column-{{id}}" data-id="{{id}}">
+<li class="mod_kanban_column col card 
+    {{#autohide}}mod_kanban_autohide{{/autohide}}
+    {{#locked}}mod_kanban_locked_column{{/locked}}
+    {{#wiplimit}}mod_kanban_column_wiplimit{{/wiplimit}}
+    {{#addcardshere}}mod_kanban_addcardshere{{/addcardshere}}
+" id="mod_kanban_column-{{id}}" data-id="{{id}}">
     <h5 class="mod_kanban_column_title card-title">
     <span class="inplaceeditable inplaceeditable-text"{{#managecolumns}} {{^locked}}data-inplaceeditable="1" {{/locked}}data-component="mod_kanban" data-itemtype="column" data-itemid="{{id}}"
     data-value="{{{title}}}" data-type="text"{{/managecolumns}}>
