@@ -343,6 +343,7 @@ a.mod_kanban_attachment_item {
 .mod_kanban_board:not(.mod_kanban_board_locked_columns) .mod_kanban_unlock_board_columns,
 .mod_kanban_board:not(.mod_kanban_addcards, .mod_kanban_manageassignedcards, .mod_kanban_manageallcards)
 .mod_kanban_addcard_container,
+.mod_kanban_board.mod_kanban_hasaddcards .mod_kanban_column:not(.mod_kanban_addcardshere) .mod_kanban_addcard,
 .mod_kanban_board:not(.mod_kanban_managecolumns) .mod_kanban_addcolumn_container,
 .mod_kanban_board:not(.mod_kanban_hastemplate) .mod_kanban_show_template,
 .mod_kanban_board.mod_kanban_istemplate .mod_kanban_show_template,
