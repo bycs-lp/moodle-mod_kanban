@@ -24,9 +24,8 @@
 import {DragDrop} from 'core/reactive';
 import selectors from 'mod_kanban/selectors';
 import exporter from 'mod_kanban/exporter';
-import {alert, exception as displayException, saveCancel} from 'core/notification';
+import {exception as displayException, saveCancel} from 'core/notification';
 import ModalForm from 'core_form/modalform';
-import ModalEvents from 'core/modal_events';
 import Modal from 'core/modal';
 import * as Str from 'core/str';
 import {get_string as getString} from 'core/str';
@@ -216,7 +215,7 @@ export default class extends KanbanComponent {
      * Show modal with card details.
      * @param {*} event Click event.
      */
-    _showDetailsModal(event) {
+    async _showDetailsModal(event) {
         let id = this.id;
         if (event.target.dataset.id !== undefined) {
             id = event.target.dataset.id;
@@ -225,19 +224,16 @@ export default class extends KanbanComponent {
         let data = exporter.exportCard(this.reactive.state, id);
         let title = this.reactive.state.common.usenumbers ? '#' + data.number + ' ' + data.title : data.title;
 
-        alert(
-            title,
-            Templates.render('mod_kanban/descriptionmodal', data),
-            getString('close', 'form')
-        ).then((modal) => {
-            modal.modal[0].addEventListener(ModalEvents.bodyRendered, () => {
-                document.querySelectorAll(selectors.CARDNUMBER).forEach((el) => {
-                    this.removeEventListener(el, 'click', this._clickDetailsButton);
-                    this.addEventListener(el, 'click', this._clickDetailsButton);
-                });
-            });
-            return true;
-        }).catch((error) => Log.debug(error));
+        let body = await Templates.renderForPromise('mod_kanban/descriptionmodal', data);
+
+        const modal = await Modal.create({
+            body: body.html,
+            bodyJS: body.js,
+            title: title,
+            removeOnClose: true,
+            show: true,
+        });
+        modal.modal[0].dataset.id = id;
     }
 
     /**
@@ -245,9 +241,12 @@ export default class extends KanbanComponent {
      * @param {*} event Click event.
      */
     _clickDetailsButton(event) {
-        document.querySelector(
+        const card = document.querySelector(
             selectors.CARD + `[data-number="${event.target.dataset.id}"]` + ' ' + selectors.DETAILBUTTON
-        ).click();
+        );
+        if (card) {
+            card.click();
+        }
     }
 
     /**
@@ -535,7 +534,6 @@ export default class extends KanbanComponent {
             let doc = new DOMParser().parseFromString(element.title, 'text/html');
             this.getElement(selectors.INPLACEEDITABLE).setAttribute('data-value', doc.documentElement.textContent);
             this.getElement(selectors.INPLACEEDITABLE).querySelector('a').innerHTML = element.title;
-            this.getElement(selectors.DISCUSSIONMODALTITLE).innerHTML = element.title;
         }
         this.toggleClass(element.hasdescription, 'mod_kanban_hasdescription');
         this.toggleClass(element.hasattachment, 'mod_kanban_hasattachment');
