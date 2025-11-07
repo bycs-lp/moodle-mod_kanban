@@ -62,15 +62,13 @@
             {{/hasassignees}}
         </div>
         <div class="mod_kanban_description">
-            <button class="mod_kanban_discussion_trigger btn btn-icon icon-no-margin p-0" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_discussion_modal_{{id}}" data-target="#mod_kanban_discussion_modal_{{id}}">
+            <button class="mod_kanban_discussion_trigger btn btn-icon icon-no-margin p-0">
             {{#pix}} t/messages, core, {{#str}} showdiscussion, mod_kanban {{/str}} {{/pix}}
             </button>
             <button class="mod_kanban_detail_trigger btn btn-icon icon-no-margin p-0">
             {{#pix}} e/file-text, core, {{#str}} showdescription, mod_kanban {{/str}} {{/pix}}
             </button>
         </div>
-        {{>mod_kanban/discussionmodal}}
-        {{>mod_kanban/historymodal}}
     </div>
     {{>mod_kanban/addcard}}
 </li>

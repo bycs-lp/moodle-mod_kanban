@@ -125,7 +125,7 @@ export default class {
         card.cardid = card.id;
         card.hasassignees = card.assignees.length > 0;
         let options = JSON.parse(card.options);
-        if (card.hasassignees && typeof card.assignees[0] == 'number') {
+        if (card.hasassignees) {
             card.assignees = card.assignees.map((userid) => {
                 return state.users.get(userid);
             });
