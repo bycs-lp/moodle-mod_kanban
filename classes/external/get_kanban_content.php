@@ -128,6 +128,12 @@ class get_kanban_content extends external_api {
                         'groupid' => new external_value(PARAM_INT, 'groupboard for groupid', VALUE_OPTIONAL, 0),
                         'template' => new external_value(PARAM_INT, 'board is a template', VALUE_OPTIONAL, 0),
                         'heading' => new external_value(PARAM_TEXT, 'heading of the board'),
+                        'hasaddcards' => new external_value(
+                            PARAM_BOOL,
+                            'whether the board has at least one column with addcards option',
+                            VALUE_OPTIONAL,
+                            false
+                        ),
                     ]),
                     'columns' => new external_multiple_structure(
                         new external_single_structure(
@@ -496,9 +502,11 @@ class get_kanban_content extends external_api {
 
         if ($timestamp <= $timestampcolumns) {
             $kanbancolumns = $DB->get_records_select('kanban_column', $sql, $params);
+            $kanbanboard->hasaddcards = $boardmanager->has_addcards($kanbancolumns);
         } else {
             $kanbancolumns = [];
         }
+
         foreach ($kanbancolumns as $kanbancolumn) {
             $kanbancolumn->title = clean_param($kanbancolumn->title, PARAM_TEXT);
         }
