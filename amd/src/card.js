@@ -532,8 +532,12 @@ export default class extends KanbanComponent {
             // This avoids double encoding of html entities as the value of "data-value" is exactly what is shown
             // in the input field when clicking on the inplace editable.
             let doc = new DOMParser().parseFromString(element.title, 'text/html');
-            this.getElement(selectors.INPLACEEDITABLE).setAttribute('data-value', doc.documentElement.textContent);
-            this.getElement(selectors.INPLACEEDITABLE).querySelector('a').innerHTML = element.title;
+            const inplaceeditable = this.getElement(selectors.INPLACEEDITABLE);
+            inplaceeditable.setAttribute('data-value', doc.documentElement.textContent);
+            const inplaceeditableLink = inplaceeditable.querySelector('a');
+            if (inplaceeditableLink) {
+                inplaceeditableLink.innerHTML = element.title;
+            }
         }
         this.toggleClass(element.hasdescription, 'mod_kanban_hasdescription');
         this.toggleClass(element.hasattachment, 'mod_kanban_hasattachment');
