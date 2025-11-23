@@ -68,6 +68,16 @@ class edit_column_form extends dynamic_form {
         $mform->setType('wiplimitenable', PARAM_BOOL);
 
         $mform->disabledIf('wiplimit', 'wiplimitenable', 'notchecked');
+
+        $collimitarray = [];
+        $collimitarray[] = $mform->createElement('advcheckbox', 'collimitenable', get_string('collimitenable', 'kanban'));
+        $collimitarray[] = $mform->createElement('text', 'collimit', get_string('collimit', 'kanban'), ['size' => '5']);
+        $mform->addGroup($collimitarray, 'collimitgroup', '', '', false);
+
+        $mform->setType('collimit', PARAM_INT);
+        $mform->setType('collimitenable', PARAM_BOOL);
+
+        $mform->disabledIf('collimit', 'collimitenable', 'notchecked');
     }
 
     /**
@@ -136,6 +146,8 @@ class edit_column_form extends dynamic_form {
         $column->autohide = $options->autohide;
         $column->wiplimitenable = !empty($options->wiplimit);
         $column->wiplimit = (empty($options->wiplimit) ? 0 : $options->wiplimit);
+        $column->collimitenable = !empty($options->collimit);
+        $column->collimit = (empty($options->collimit) ? 0 : $options->collimit);
         $this->set_data($column);
     }
 
