@@ -29,7 +29,8 @@
         "locked": false,
         "wiplimit": 5,
         "cardcount": 12,
-        "addcardshere": true,
+        "collimit": 10,
+        "addcardshere": true
     }
 }}
 <li class="mod_kanban_column col card 
@@ -48,7 +49,10 @@
     </h5>
     <div class="mod_kanban_column_stats">
     <span class="badge badge-light mod_kanban_addcardshere_icon" title="{{#str}} addingcardsallowed, mod_kanban{{/str}}">{{#pix}} t/add, core, {{#str}} addingcardsallowed, mod_kanban{{/str}} {{/pix}}</span>
-    <span class="badge badge-light mod_kanban_wip"><span class="mod_kanban_cardcount">{{cardcount}}</span> {{#pix}} e/template, core, {{#str}} cardcount, mod_kanban{{/str}} {{/pix}}</span>
+    <span class="badge badge-light mod_kanban_wip"><span class="mod_kanban_cardcount">{{cardcount}}</span>
+        <span class="mod_kanban_colinfo" title="{{#str}} colmax, mod_kanban{{/str}}"> / <span class="mod_kanban_colmax">{{collimit}}</span></span>
+         {{#pix}} e/template, core, {{#str}} cardcount, mod_kanban{{/str}} {{/pix}}
+    </span>
     <span class="badge badge-light mod_kanban_wipinfo"><span class="mod_kanban_wiplimit">{{wiplimit}}</span> / {{#pix}} t/user, core, {{#str}} wiplimit, mod_kanban{{/str}} {{/pix}}</span>
     </div>
     <div class="mod_kanban_hidden_actions">

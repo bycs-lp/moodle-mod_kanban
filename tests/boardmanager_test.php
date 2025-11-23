@@ -322,6 +322,33 @@ final class boardmanager_test extends \advanced_testcase {
     }
 
     /**
+     * Test for column limit enforcement.
+     *
+     * @return void
+     */
+    public function test_collimit(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $boardmanager = new boardmanager($this->kanban->cmid);
+        $boardid = $boardmanager->create_board();
+        $boardmanager->load_board($boardid);
+        $colwithlimit = $boardmanager->add_column(0, ['title' => 'Testcolumn', 'options' => '{"collimit" : 2}']);
+        $colwithoutlimit = $boardmanager->add_column(0, ['title' => 'Testcolumn 2']);
+        $boardmanager->add_card($colwithlimit, 0, ['title' => 'Card 1']);
+        $boardmanager->add_card($colwithlimit, 0, ['title' => 'Card 2']);
+        $cardid = $boardmanager->add_card($colwithoutlimit, 0, ['title' => 'Card 3']);
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessage(get_string('collimitreached', 'kanban', ['coltitle' => 'Testcolumn', 'limit' => 2]));
+        $boardmanager->add_card($colwithlimit, 0, ['title' => 'Card 4']);
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessage(get_string('collimitreached', 'kanban', ['coltitle' => 'Testcolumn', 'limit' => 2]));
+        $boardmanager->move_card($cardid, 0, $colwithlimit);
+    }
+
+    /**
      * Tests the json sanitization function.
      *
      * @dataProvider sanitize_json_string_provider

@@ -35,6 +35,7 @@ export default {
     CARD: `.mod_kanban_card`,
     CARDCOUNT: `.mod_kanban_cardcount`,
     CARDNUMBER: `.mod_kanban_card_number`,
+    COLMAX: `.mod_kanban_colmax`,
     COLUMN: `.mod_kanban_column`,
     COLUMNCONTAINER: `.mod_kanban_column_container`,
     COLUMNINNER: `.mod_kanban_column_inner`,

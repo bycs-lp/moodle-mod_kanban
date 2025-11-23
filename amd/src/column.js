@@ -306,6 +306,8 @@ export default class extends KanbanComponent {
             this.toggleClass(options.wiplimit > 0, 'mod_kanban_column_wiplimit');
             this.getElement(selectors.WIPLIMIT).innerHTML = options.wiplimit;
             this.toggleClass(options.addcardshere, 'mod_kanban_addcardshere');
+            this.toggleClass(options.collimit > 0, 'mod_kanban_column_collimit');
+            this.getElement(selectors.COLMAX).innerHTML = options.collimit;
         }
         // Update card count after updating column
         this.getElement(selectors.CARDCOUNT).innerHTML = this.getElements(selectors.CARD).length;

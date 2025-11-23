@@ -493,6 +493,13 @@ class boardmanager {
         ];
         $data = array_merge($defaults, $data, $defaultsfixed);
 
+        $column = $DB->get_record('kanban_column', ['id' => $columnid]);
+        $options = json_decode($column->options);
+        $collimit = $options->collimit ?? 0;
+        if ($collimit > 0) {
+            self::check_collimit($columnid, 0, $collimit);
+        }
+
         $data['number'] = self::get_next_card_number();
 
         $data['id'] = $DB->insert_record('kanban_card', $data);
@@ -593,9 +600,14 @@ class boardmanager {
 
                 $options = json_decode($targetcolumn->options);
                 $wiplimit = $options->wiplimit ?? 0;
+                $collimit = $options->collimit ?? 0;
 
                 if ($wiplimit > 0) {
                     self::check_wiplimit($columnid, $cardid, $wiplimit);
+                }
+
+                if ($collimit > 0) {
+                    self::check_collimit($columnid, $cardid, $collimit);
                 }
 
                 // Card needs to be processed first, because column sorting in frontend will only
@@ -681,6 +693,30 @@ class boardmanager {
         }
         if (count($overlimit) > 0) {
             throw new moodle_exception('wiplimitreached', 'mod_kanban', '', ['users' => implode(', ', $overlimit)]);
+        }
+    }
+
+    /**
+     * Checks whether the column limit is reached for a certain column and card. Raises an exception if limit is reached.
+     * @param int $columnid Id of the column
+     * @param int $cardid Id of the current card
+     * @param int $collimit Column limit
+     * @throws moodle_exception
+     */
+    public function check_collimit(int $columnid, int $cardid, int $collimit): void {
+        global $DB;
+        $currentcards = $DB->count_records_select(
+            'kanban_card',
+            'kanban_column = :columnid AND id != :cardid',
+            ['columnid' => $columnid, 'cardid' => $cardid]
+        );
+        if ($currentcards >= $collimit) {
+            throw new moodle_exception(
+                'collimitreached',
+                'mod_kanban',
+                '',
+                ['coltitle' => $this->get_column($columnid)->title, 'limit' => $collimit]
+            );
         }
     }
 
@@ -991,6 +1027,15 @@ class boardmanager {
         $carddata = array_merge($card, $cardupdate);
         $carddata['username'] = fullname($USER);
         $carddata['boardname'] = $this->kanban->name;
+
+        $columnid = $cardupdate['kanban_column'] ?? $card['kanban_column'];
+        $column = $this->get_column($columnid);
+        $options = json_decode($column->options);
+        $collimit = $options->collimit ?? 0;
+        if ($collimit > 0) {
+            self::check_collimit($columnid, $cardid, $collimit);
+        }
+
         if (isset($data['assignees'])) {
             $assignees = $data['assignees'];
             $currentassignees = $this->get_card_assignees($cardid);
@@ -1022,10 +1067,6 @@ class boardmanager {
                 $cardupdate['assignees'] = $assignees;
             }
             $assignees = [];
-
-            $columnid = $cardupdate['kanban_column'] ?? $card['kanban_column'];
-            $column = $this->get_column($columnid);
-            $options = json_decode($column->options);
             $wiplimit = $options->wiplimit ?? 0;
 
             if ($wiplimit > 0) {
@@ -1109,6 +1150,7 @@ class boardmanager {
             'autohide' => !empty($data['autohide']),
             'wiplimit' => empty($data['wiplimitenable']) ? 0 : $data['wiplimit'],
             'addcardshere' => !empty($data['addcardshere']),
+            'collimit' => empty($data['collimitenable']) ? 0 : $data['collimit'],
         ];
         if (isset($data['title'])) {
             $data['title'] = s($data['title']);
