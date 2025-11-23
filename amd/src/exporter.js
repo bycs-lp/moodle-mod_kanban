@@ -93,6 +93,9 @@ export default class {
         if (options.wiplimit > 0) {
             col.wiplimit = options.wiplimit;
         }
+        if (options.collimit > 0) {
+            col.collimit = options.collimit;
+        }
         col.cardcount = 0;
         if (col.hascards) {
             let cardOrder = col.sequence.split(',');
