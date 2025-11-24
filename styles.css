@@ -297,7 +297,6 @@ a.mod_kanban_attachment_item {
 .mod_kanban_discussion_messages {
     font-size: smaller;
     max-height: 70vh;
-    overflow-y: auto;
 }
 
 .mod_kanban_board .draggable {
@@ -362,7 +361,8 @@ a.mod_kanban_attachment_item {
 .mod_kanban_card.mod_kanban_closed .mod_kanban_duedate,
 .mod_kanban_card:not(.mod_kanban_closed) .mod_kanban_uncomplete_card,
 .mod_kanban_card:not(.mod_kanban_closed) .mod_kanban_card_completion,
-.mod_kanban_card .modal-body:not(.mod_kanban_loading) .mod_kanban_loading_status,
+.mod_kanban_discussion_modal:not(.mod_kanban_loading) .mod_kanban_loading_status,
+.mod_kanban_history_modal:not(.mod_kanban_loading) .mod_kanban_loading_status,
 .mod_kanban_board:not(.mod_kanban_manageboard) .mod_kanban_push_card,
 .mod_kanban_board:not(.mod_kanban_addcards) .mod_kanban_duplicate_card {
     display: none;

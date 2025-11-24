@@ -24,9 +24,9 @@
 import {DragDrop} from 'core/reactive';
 import selectors from 'mod_kanban/selectors';
 import exporter from 'mod_kanban/exporter';
-import {alert, exception as displayException, saveCancel} from 'core/notification';
+import {exception as displayException, saveCancel} from 'core/notification';
 import ModalForm from 'core_form/modalform';
-import ModalEvents from 'core/modal_events';
+import Modal from 'core/modal';
 import * as Str from 'core/str';
 import {get_string as getString} from 'core/str';
 import Templates from 'core/templates';
@@ -144,22 +144,17 @@ export default class extends KanbanComponent {
         this.addEventListener(
             this.getElement(selectors.DISCUSSIONMODALTRIGGER),
             'click',
-            this._updateDiscussion
+            this._showDiscussionModal
         );
         this.addEventListener(
             this.getElement(selectors.DISCUSSIONSHOW, this.id),
             'click',
-            this._updateDiscussion
-        );
-        this.addEventListener(
-            this.getElement(selectors.DISCUSSIONSEND),
-            'click',
-            this._sendMessage
+            this._showDiscussionModal
         );
         this.addEventListener(
             this.getElement(selectors.HISTORYMODALTRIGGER),
             'click',
-            this._updateHistory
+            this._showHistoryModal
         );
         this.addEventListener(
             this.getElement(selectors.MOVEMODALTRIGGER),
@@ -220,7 +215,7 @@ export default class extends KanbanComponent {
      * Show modal with card details.
      * @param {*} event Click event.
      */
-    _showDetailsModal(event) {
+    async _showDetailsModal(event) {
         let id = this.id;
         if (event.target.dataset.id !== undefined) {
             id = event.target.dataset.id;
@@ -229,19 +224,16 @@ export default class extends KanbanComponent {
         let data = exporter.exportCard(this.reactive.state, id);
         let title = this.reactive.state.common.usenumbers ? '#' + data.number + ' ' + data.title : data.title;
 
-        alert(
-            title,
-            Templates.render('mod_kanban/descriptionmodal', data),
-            getString('close', 'form')
-        ).then((modal) => {
-            modal.modal[0].addEventListener(ModalEvents.bodyRendered, () => {
-                document.querySelectorAll(selectors.CARDNUMBER).forEach((el) => {
-                    this.removeEventListener(el, 'click', this._clickDetailsButton);
-                    this.addEventListener(el, 'click', this._clickDetailsButton);
-                });
-            });
-            return true;
-        }).catch((error) => Log.debug(error));
+        let body = await Templates.renderForPromise('mod_kanban/descriptionmodal', data);
+
+        const modal = await Modal.create({
+            body: body.html,
+            bodyJS: body.js,
+            title: title,
+            removeOnClose: true,
+            show: true,
+        });
+        modal.modal[0].dataset.id = id;
     }
 
     /**
@@ -249,9 +241,12 @@ export default class extends KanbanComponent {
      * @param {*} event Click event.
      */
     _clickDetailsButton(event) {
-        document.querySelector(
+        const card = document.querySelector(
             selectors.CARD + `[data-number="${event.target.dataset.id}"]` + ' ' + selectors.DETAILBUTTON
-        ).click();
+        );
+        if (card) {
+            card.click();
+        }
     }
 
     /**
@@ -297,6 +292,47 @@ export default class extends KanbanComponent {
     }
 
     /**
+     * Show the discussion modal.
+     * @param {*} event Click event.
+     */
+    async _showDiscussionModal(event) {
+        let id = this.id;
+        if (event.target.dataset.id !== undefined) {
+            id = event.target.dataset.id;
+        }
+
+        let data = exporter.exportCard(this.reactive.state, id);
+        let title = this.reactive.state.common.usenumbers ? '#' + data.number + ' ' + data.title : data.title;
+
+        let body = await Templates.renderForPromise('mod_kanban/discussionmodalbody', data);
+        let footer = await Templates.renderForPromise('mod_kanban/discussionmodalfooter', data);
+
+        const modal = await Modal.create({
+            body: body.html,
+            title: title,
+            footer: footer.html,
+            removeOnClose: true,
+            show: true,
+        });
+        modal.modal[0].dataset.id = id;
+        modal.modal[0].classList.add('mod_kanban_discussion_modal');
+        modal.modal[0].classList.add('mod_kanban_loading');
+        modal.modal[0].addEventListener('click', (event) => {
+            if (event.target.closest(selectors.DISCUSSIONSEND)) {
+                this._sendMessage(event);
+            }
+            if (event.target.closest(selectors.DELETEMESSAGE)) {
+                this._removeMessageConfirm(event);
+            }
+            if (event.target.closest(selectors.CARDNUMBER)) {
+                this._clickDetailsButton(event);
+            }
+        });
+        this._renderDiscussionMessages();
+        this.reactive.dispatch('getDiscussionUpdates', this.id);
+    }
+
+    /**
      * Display confirmation modal for deleting a discussion message.
      * @param {*} event
      */
@@ -319,9 +355,10 @@ export default class extends KanbanComponent {
 
     /**
      * Dispatch event to add a message to discussion.
+     * @param {*} event
      */
-    _sendMessage() {
-        let el = this.getElement(selectors.DISCUSSIONINPUT);
+    _sendMessage(event) {
+        let el = event.target.closest(selectors.DISCUSSIONMODAL).querySelector(selectors.DISCUSSIONINPUT);
         let message = el.value.trim();
         if (message != '') {
             this.reactive.dispatch('sendDiscussionMessage', this.id, message);
@@ -330,59 +367,93 @@ export default class extends KanbanComponent {
     }
 
     /**
-     * Dispatch event to update the discussion data.
-     */
-    _updateDiscussion() {
-        this.getElement(selectors.DISCUSSIONMODAL).classList.add('mod_kanban_loading');
-        this.reactive.dispatch('getDiscussionUpdates', this.id);
-    }
-
-    /**
      * Called when discussion was updated.
+     * @param {*} event
      */
-    async _discussionUpdated() {
-        let data = {
-            discussions: exporter.exportDiscussion(this.reactive.state, this.id)
-        };
-        Templates.renderForPromise('mod_kanban/discussionmessages', data).then(({html}) => {
-            this.getElement(selectors.DISCUSSION, this.id).innerHTML = html;
-            this.getElement(selectors.DISCUSSIONMODAL, this.id).classList.remove('mod_kanban_loading');
-            let el = this.getElement(selectors.DISCUSSIONMESSAGES);
-            // Scroll down to latest message.
-            el.scrollTop = el.scrollHeight;
-            data.discussions.forEach((d) => {
-                if (d.candelete) {
-                    this.addEventListener(this.getElement(selectors.DELETEMESSAGE, d.id), 'click', this._removeMessageConfirm);
-                }
-            });
-            this.getElement(selectors.DISCUSSION).querySelectorAll(selectors.CARDNUMBER).forEach((el) => {
-                this.removeEventListener(el, 'click', this._clickDetailsButton);
-                this.addEventListener(el, 'click', this._clickDetailsButton);
-            });
-            return true;
-        }).catch((error) => displayException(error));
+    async _discussionUpdated(event) {
+        if (event.element.kanban_card != this.id) {
+            return;
+        }
+        this._renderDiscussionMessages();
     }
 
     /**
-     * Dispatch event to update the history data.
+     * Render the discussion messages in the discussion modal.
      */
-    _updateHistory() {
-        this.getElement(selectors.HISTORYMODAL).classList.add('mod_kanban_loading');
+    _renderDiscussionMessages() {
+        let modal = document.querySelector(selectors.DISCUSSIONMODAL + `[data-id="${this.id}"]`);
+        if (modal) {
+            let data = {
+                discussions: exporter.exportDiscussion(this.reactive.state, this.id)
+            };
+            Templates.renderForPromise('mod_kanban/discussionmessages', data).then(({html}) => {
+                modal.classList.remove('mod_kanban_loading');
+                modal.querySelector(selectors.DISCUSSION).innerHTML = html;
+                let el = modal.querySelector('.modal-body');
+                // Scroll down to latest message.
+                el.scrollTop = el.scrollHeight;
+                return true;
+            }).catch((error) => displayException(error));
+        }
+    }
+
+    /**
+     * Show the history modal for the card.
+     * @param {*} event
+     */
+    async _showHistoryModal(event) {
+        let id = this.id;
+        if (event.target.dataset.id !== undefined) {
+            id = event.target.dataset.id;
+        }
+
+        let data = exporter.exportCard(this.reactive.state, id);
+        let title = getString(
+            'historyfor',
+            'mod_kanban',
+            this.reactive.state.common.usenumbers ? '#' + data.number + ' ' + data.title : data.title
+        );
+
+        let body = await Templates.renderForPromise('mod_kanban/historymodalbody', data);
+
+        const modal = await Modal.create({
+            body: body.html,
+            title: title,
+            removeOnClose: true,
+            show: true,
+        });
+        modal.modal[0].dataset.id = id;
+        modal.modal[0].classList.add('mod_kanban_history_modal');
+        modal.modal[0].classList.add('mod_kanban_loading');
+        this._renderHistoryItems();
         this.reactive.dispatch('getHistoryUpdates', this.id);
     }
 
     /**
      * Called when history was updated.
+     * @param {*} event
      */
-    async _historyUpdated() {
+    async _historyUpdated(event) {
+        if (event.element.kanban_card != this.id) {
+            return;
+        }
+        this._renderHistoryItems();
+    }
+
+    /**
+     * Render the history items in the history modal.
+     */
+    _renderHistoryItems() {
+        let modal = document.querySelector(selectors.HISTORYMODAL + `[data-id="${this.id}"]`);
         let data = {
             historyitems: exporter.exportHistory(this.reactive.state, this.id)
         };
         Templates.renderForPromise('mod_kanban/historyitems', data).then(({html}) => {
-            this.getElement(selectors.HISTORY, this.id).innerHTML = html;
-            this.getElement(selectors.HISTORYMODAL).classList.remove('mod_kanban_loading');
+            modal.classList.remove('mod_kanban_loading');
+            modal.querySelector(selectors.HISTORY, this.id).innerHTML = html;
+            modal.classList.remove('mod_kanban_loading');
             // Scroll down to latest history item.
-            let el = this.getElement(selectors.HISTORYITEMS);
+            let el = modal.querySelector('.modal-body');
             el.scrollTop = el.scrollHeight;
             return true;
         }).catch((error) => displayException(error));
@@ -461,9 +532,12 @@ export default class extends KanbanComponent {
             // This avoids double encoding of html entities as the value of "data-value" is exactly what is shown
             // in the input field when clicking on the inplace editable.
             let doc = new DOMParser().parseFromString(element.title, 'text/html');
-            this.getElement(selectors.INPLACEEDITABLE).setAttribute('data-value', doc.documentElement.textContent);
-            this.getElement(selectors.INPLACEEDITABLE).querySelector('a').innerHTML = element.title;
-            this.getElement(selectors.DISCUSSIONMODALTITLE).innerHTML = element.title;
+            const inplaceeditable = this.getElement(selectors.INPLACEEDITABLE);
+            inplaceeditable.setAttribute('data-value', doc.documentElement.textContent);
+            const inplaceeditableLink = inplaceeditable.querySelector('a');
+            if (inplaceeditableLink) {
+                inplaceeditableLink.innerHTML = element.title;
+            }
         }
         this.toggleClass(element.hasdescription, 'mod_kanban_hasdescription');
         this.toggleClass(element.hasattachment, 'mod_kanban_hasattachment');
