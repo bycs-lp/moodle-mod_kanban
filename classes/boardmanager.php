@@ -365,14 +365,16 @@ class boardmanager {
             $card = $this->get_card($cardid);
             if ($updatecolumn) {
                 $column = $DB->get_record('kanban_column', ['id' => $card->kanban_column]);
-                $update = [
-                    'id' => $column->id,
-                    'timemodified' => time(),
-                    'sequence' => helper::sequence_remove($column->sequence, $cardid),
-                ];
-                $DB->update_record('kanban_column', $update);
-                $this->formatter->put('columns', $update);
-                helper::update_cached_timestamp($card->kanban_board, constants::MOD_KANBAN_COLUMN);
+                if ($column) {
+                    $update = [
+                        'id' => $column->id,
+                        'timemodified' => time(),
+                        'sequence' => helper::sequence_remove($column->sequence ?? '', $cardid),
+                    ];
+                    $DB->update_record('kanban_column', $update);
+                    $this->formatter->put('columns', $update);
+                    helper::update_cached_timestamp($card->kanban_board, constants::MOD_KANBAN_COLUMN);
+                }
             }
             $DB->delete_records('kanban_card', ['id' => $cardid]);
             helper::remove_calendar_event($this->kanban, (object) ['id' => $cardid]);
@@ -402,7 +404,7 @@ class boardmanager {
             $DB->delete_records('kanban_column', ['id' => $id]);
             $this->formatter->delete('columns', ['id' => $id]);
             if ($updateboard) {
-                $this->board->sequence = helper::sequence_remove($this->board->sequence, $id);
+                $this->board->sequence = helper::sequence_remove($this->board->sequence ?? '', $id);
                 $update = ['id' => $this->board->id, 'sequence' => $this->board->sequence, 'timemodified' => time()];
                 $DB->update_record('kanban_board', $update);
                 helper::update_cached_board($update['id']);
@@ -616,7 +618,7 @@ class boardmanager {
                 // Remove from current column.
                 $update = [
                     'id' => $sourcecolumn->id,
-                    'sequence' => helper::sequence_remove($sourcecolumn->sequence, $cardid),
+                    'sequence' => helper::sequence_remove($sourcecolumn->sequence ?? '', $cardid),
                     'timemodified' => time(),
                 ];
                 $DB->update_record('kanban_column', $update);
