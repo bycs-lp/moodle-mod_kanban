@@ -130,5 +130,20 @@ function xmldb_kanban_upgrade($oldversion) {
         // Kanban savepoint reached.
         upgrade_mod_savepoint(true, 2025020301, 'kanban');
     }
+
+    if ($oldversion < 2025120801) {
+        // Define field timemodified to be added to kanban.
+        $table = new xmldb_table('kanban');
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'completioncomplete');
+
+        // Conditionally launch add field timemodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Kanban savepoint reached.
+        upgrade_mod_savepoint(true, 2025120801, 'kanban');
+    }
+
     return true;
 }
