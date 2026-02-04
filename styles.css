@@ -474,18 +474,17 @@ a.mod_kanban_attachment_item {
     border: 0.2rem solid orange;
 }
 
-.mod_kanban_filter_search {
-    width: 80%;
+.row .mod_kanban_filter_search {
+    width: 50%;
+    min-width: 15rem;
+    max-width: 50rem;
+    margin-left: .7rem;
 }
 
-.mod_kanban_filter_search + a[data-action="closesearch"] {
-    position: absolute;
-    right: 0.2rem;
-    top: 0.2rem;
-}
-
-.card.mod_kanban_card.mod_kanban_card_hidden {
-    display: none;
+.mod_kanban_filter_search + .mod_kanban_filter_search_close {
+    position: relative;
+    left: -1.7rem;
+    top: .1rem;
 }
 
 .mod_kanban_filters {
