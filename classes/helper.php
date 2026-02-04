@@ -211,7 +211,7 @@ class helper {
      * @param string $messagename The name of the message defined in message.php
      * @param array $users The users to send the notification to
      * @param object $data The data to describe the message details
-     * @param string $altmessagename The name of an alternative message string to be used
+     * @param string|null $altmessagename The name of an alternative message string to be used
      * @param bool $tocurrentuser Whether to send notifications also to current user
      */
     public static function send_notification(
@@ -219,7 +219,7 @@ class helper {
         string $messagename,
         array $users,
         object $data,
-        string $altmessagename = null, // phpcs:ignore
+        ?string $altmessagename = null,
         bool $tocurrentuser = false
     ) {
         global $OUTPUT, $USER;

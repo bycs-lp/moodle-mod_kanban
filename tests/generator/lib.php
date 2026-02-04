@@ -30,7 +30,7 @@ class mod_kanban_generator extends testing_module_generator {
      * @param array|null $options
      * @return stdClass kanban instance
      */
-    public function create_instance($record = null, array $options = null): stdClass { // phpcs:ignore
+    public function create_instance($record = null, ?array $options = null): stdClass { // phpcs:ignore
         $record = (array) $record + [
                 'name' => 'test kanban',
                 'intro' => '',
