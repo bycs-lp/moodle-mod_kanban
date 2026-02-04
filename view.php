@@ -74,7 +74,11 @@ if (!empty($userid)) {
 }
 
 if (!empty($cardid)) {
-    $boardid = $DB->get_field('kanban_card', 'kanban_board', ['id' => $cardid], MUST_EXIST);
+    $boardidforcard = $DB->get_field('kanban_card', 'kanban_board', ['id' => $cardid], MUST_EXIST);
+    if (!empty($boardid) && $boardid != $boardidforcard) {
+        throw new moodle_exception('invalidcardboardcombination', 'mod_kanban');
+    }
+    $boardid = $boardidforcard;
 }
 
 if (empty($boardid)) {

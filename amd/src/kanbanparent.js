@@ -25,6 +25,7 @@ export default class extends BaseComponent {
     create() {
         this.cmid = this.element.dataset.cmid;
         this.id = this.element.dataset.id;
+        // Optional cardid parameter. If it contains a valid id the related card will be highlighted on load.
         this.cardid = this.element.dataset.cardid;
     }
 
@@ -39,15 +40,7 @@ export default class extends BaseComponent {
             exporter.exportStateForTemplate(state),
         ).then(() => {
             if (this.cardid) {
-                const cardelement = document.getElementById(`mod_kanban_card-${this.cardid}`);
-                if (cardelement) {
-                    cardelement.scrollIntoView({behavior: 'smooth', block: 'center'});
-                    cardelement.classList.add('mod_kanban_highlighted_card');
-                    cardelement.focus();
-                    setTimeout(() => {
-                        cardelement.classList.remove('mod_kanban_highlighted_card');
-                    }, 10000);
-                }
+                this.reactive.dispatch('setHighlightedCard', this.cardid);
             }
             return true;
         }).catch(error => {

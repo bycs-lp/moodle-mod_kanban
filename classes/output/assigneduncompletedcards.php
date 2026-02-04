@@ -19,16 +19,16 @@ namespace mod_kanban\output;
 use core\output\renderable;
 use core\output\templatable;
 use core\output\renderer_base;
-use core\output\named_templatable;
 
 /**
- * Class assigneduncompletedcards
+ * Class for displaying uncompleted cards in the activity overview.
  *
  * @package    mod_kanban
  * @copyright  2025 ISB Bayern
+ * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assigneduncompletedcards implements named_templatable, renderable, templatable {
+class assigneduncompletedcards implements renderable, templatable {
     /** @var int The course module id. */
     protected int $cmid;
 
@@ -64,14 +64,5 @@ class assigneduncompletedcards implements named_templatable, renderable, templat
             ];
         }
         return $data;
-    }
-
-    /**
-     * Returns the name of the template to use for this renderable.
-     * @param renderer_base $renderer The renderer.
-     * @return string
-     */
-    public function get_template_name(renderer_base $renderer): string {
-        return 'mod_kanban/assigneduncompletedcards';
     }
 }
