@@ -26,7 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['addcard'] = 'Add a card to this column';
+$string['addcardshere'] = 'Allow adding cards in this column';
+$string['addcardshere_help'] = 'If selected for at least one column in the board, cards can only be added in the columns with this option.';
 $string['addcolumn'] = 'Add a column to this board';
+$string['addingcardsallowed'] = 'Adding new cards is allowed in this column';
 $string['aftercompletion'] = 'after card is closed';
 $string['afterdue'] = 'after card is due';
 $string['assignee'] = 'Assignee';
