@@ -358,6 +358,7 @@ a.mod_kanban_attachment_item {
 .mod_kanban_column:not(.mod_kanban_autohide) .mod_kanban_hidden_actions,
 .mod_kanban_column.mod_kanban_autohide:not(.mod_kanban_show_hidden) .mod_kanban_card.mod_kanban_closed,
 .mod_kanban_column:not(.mod_kanban_column_wiplimit) .mod_kanban_wipinfo,
+.mod_kanban_column:not(.mod_kanban_addcardshere) .mod_kanban_column_stats .mod_kanban_addcardshere_icon,
 .mod_kanban_card.mod_kanban_closed .mod_kanban_complete_card,
 .mod_kanban_card.mod_kanban_closed .mod_kanban_duedate,
 .mod_kanban_card:not(.mod_kanban_closed) .mod_kanban_uncomplete_card,
@@ -491,4 +492,8 @@ a.mod_kanban_attachment_item {
 .mod_kanban_filters {
     position: relative;
     margin-bottom: 10px;
+}
+
+.mod_kanban_column_stats .icon {
+    margin: 0;
 }
