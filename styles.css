@@ -469,3 +469,7 @@ a.mod_kanban_attachment_item {
 .mod_kanban_column_stats {
     text-align: right;
 }
+
+.card.mod_kanban_card.mod_kanban_highlighted_card {
+    border: 0.2rem solid orange;
+}
