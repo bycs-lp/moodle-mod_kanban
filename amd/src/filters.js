@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+import {debounce} from 'core/utils';
+
 /**
  * Filter the cards of a kanban board.
  *
@@ -31,7 +33,7 @@ export const filters = (id) => {
         return;
     }
 
-    searchinput.addEventListener('input', function(event) {
+    searchinput.addEventListener('input', debounce((event) => {
         const input = event.target.closest('input');
         const searchterm = input.value.trim().toLowerCase();
         const board = input.closest('.mod_kanban_board');
@@ -46,27 +48,25 @@ export const filters = (id) => {
             }
             const titletext = title.textContent.trim().toLowerCase();
             if (titletext.includes(searchterm)) {
-                card.classList.remove('mod_kanban_card_hidden');
+                card.classList.remove('d-none');
             } else {
-                card.classList.add('mod_kanban_card_hidden');
+                card.classList.add('d-none');
             }
         });
-    });
+    }, 500));
 
     const closebutton = document.querySelector(`a[data-action="closesearch"]`);
+    const board = searchinput.closest('.mod_kanban_board');
+    if (!board) {
+        return;
+    }
     if (closebutton) {
         closebutton.addEventListener('click', function() {
-            if (searchinput) {
-                searchinput.value = '';
-                const board = searchinput.closest('.mod_kanban_board');
-                if (!board) {
-                    return;
-                }
-                const cards = board.querySelectorAll('.mod_kanban_card');
-                cards.forEach((card) => {
-                    card.classList.remove('mod_kanban_card_hidden');
-                });
-            }
+            searchinput.value = '';
+            const cards = board.querySelectorAll('.mod_kanban_card');
+            cards.forEach((card) => {
+                card.classList.remove('d-none');
+            });
         });
     }
 };
