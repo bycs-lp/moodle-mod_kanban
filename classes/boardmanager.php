@@ -18,7 +18,7 @@
  * Class to handle updating the board
  *
  * @package    mod_kanban
- * @copyright  2023-2025 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -36,7 +36,7 @@ use stdClass;
  * Class to handle updating the board. It also sends notifications, but does not check permissions.
  *
  * @package    mod_kanban
- * @copyright  2023-2024 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

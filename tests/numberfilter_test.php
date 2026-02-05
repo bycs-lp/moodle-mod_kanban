@@ -21,7 +21,7 @@ namespace mod_kanban;
  *
  * @package    mod_kanban
  * @category   test
- * @copyright  2024 ISB Bayern
+ * @copyright  2026 ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers    \mod_kanban\numberfilter
  */

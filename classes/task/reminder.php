@@ -18,7 +18,7 @@
  * Reminder task
  *
  * @package    mod_kanban
- * @copyright   2023-2024 ISB Bayern
+ * @copyright   2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,7 +31,7 @@ use mod_kanban\helper;
  * Reminder task
  *
  * @package    mod_kanban
- * @copyright   2023-2024 ISB Bayern
+ * @copyright   2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

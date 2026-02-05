@@ -92,7 +92,7 @@ to complete the installation from the command line.
 
 ## License ##
 
-2023 ISB Bayern, Stefan Hanauska <stefan.hanauska@csg-in.de>
+2026 ISB Bayern, Stefan Hanauska <stefan.hanauska@csg-in.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

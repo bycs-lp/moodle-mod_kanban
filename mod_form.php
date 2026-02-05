@@ -24,7 +24,7 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
  * Editing form for mod_kanban
  *
  * @package     mod_kanban
- * @copyright   2023-2024 ISB Bayern
+ * @copyright   2023-2026 ISB Bayern
  * @author      Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

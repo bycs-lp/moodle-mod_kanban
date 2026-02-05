@@ -20,7 +20,7 @@ namespace mod_kanban;
  * Unit test for mod_kanban
  *
  * @package     mod_kanban
- * @copyright   2023-2024 ISB Bayern
+ * @copyright   2023-2026 ISB Bayern
  * @author      Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers      \mod_kanban\external\change_kanban_content

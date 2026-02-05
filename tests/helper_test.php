@@ -21,7 +21,7 @@ namespace mod_kanban;
  *
  * @package    mod_kanban
  * @category   test
- * @copyright  2023-2025 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass     \mod_kanban\helper
