@@ -185,6 +185,9 @@ export default class extends KanbanComponent {
         this.userid = state.board.userid;
         this.groupid = state.board.groupid;
         this._dueDateFormat();
+        if (state.cards.get(this.id).highlighted) {
+            this._highlightCard();
+        }
     }
 
     /**
@@ -481,6 +484,18 @@ export default class extends KanbanComponent {
     }
 
     /**
+     * Highlight this card.
+     */
+    _highlightCard() {
+        this.getElement().scrollIntoView({behavior: 'smooth', block: 'center'});
+        this.getElement().classList.add('mod_kanban_highlighted_card');
+        this.getElement().focus();
+        setTimeout(() => {
+            this.getElement().classList.remove('mod_kanban_highlighted_card');
+        }, 10000);
+    }
+
+    /**
      * Called when card is updated.
      * @param {*} param0
      */
@@ -558,6 +573,9 @@ export default class extends KanbanComponent {
         }
         // Enable/disable dragging and inplace editing (e.g. if user is not assigned to the card anymore).
         this.checkEditing();
+        if (element.highlighted) {
+            this._highlightCard();
+        }
     }
 
     /**

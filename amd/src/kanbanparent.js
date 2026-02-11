@@ -25,6 +25,8 @@ export default class extends BaseComponent {
     create() {
         this.cmid = this.element.dataset.cmid;
         this.id = this.element.dataset.id;
+        // Optional cardid parameter. If it contains a valid id the related card will be highlighted on load.
+        this.cardid = this.element.dataset.cardid;
     }
 
     /**
@@ -36,7 +38,12 @@ export default class extends BaseComponent {
             this.getElement(),
             'mod_kanban/board',
             exporter.exportStateForTemplate(state),
-        ).catch(error => {
+        ).then(() => {
+            if (this.cardid) {
+                this.reactive.dispatch('setHighlightedCard', this.cardid);
+            }
+            return true;
+        }).catch(error => {
             Log.debug(error);
         });
     }
