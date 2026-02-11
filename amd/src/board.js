@@ -21,7 +21,6 @@ import KanbanComponent from 'mod_kanban/kanbancomponent';
 import Log from 'core/log';
 import {saveCancel} from 'core/notification';
 import * as Str from 'core/str';
-import {filters} from 'mod_kanban/filters';
 
 /**
  * Component representing a kanban board.
@@ -127,7 +126,6 @@ export default class extends KanbanComponent {
         }
         this.toggleClass('ontouchstart' in document.documentElement, 'mod_kanban_touch');
         this._updateScrollButtons();
-        filters(this.id);
     }
 
     /**

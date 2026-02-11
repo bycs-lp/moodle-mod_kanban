@@ -26,7 +26,7 @@ export default class extends BaseComponent {
         this.cmid = this.element.dataset.cmid;
         this.id = this.element.dataset.id;
         // Optional cardid parameter. If it contains a valid id the related card will be highlighted on load.
-        this.cardid = this.element.dataset.cardid;
+        this.cardid = parseInt(this.element.dataset.cardid);
     }
 
     /**

@@ -76,6 +76,8 @@ export default class extends KanbanComponent {
         return [
             {watch: `cards[${this.id}]:updated`, handler: this._cardUpdated},
             {watch: `cards[${this.id}]:deleted`, handler: this._cardDeleted},
+            {watch: `filters:updated`, handler: this._applyFilters},
+            {watch: `filters:deleted`, handler: this._applyFilters},
             {watch: `discussions:created`, handler: this._discussionUpdated},
             {watch: `discussions:updated`, handler: this._discussionUpdated},
             {watch: `discussions:deleted`, handler: this._discussionUpdated},
@@ -87,7 +89,7 @@ export default class extends KanbanComponent {
 
     /**
      * Called once when state is ready (also if component is registered after initial state was set), attaching event
-     * isteners and initializing drag and drop.
+     * listeners and initializing drag and drop.
      * @param {*} state The initial state
      */
     stateReady(state) {
@@ -576,6 +578,7 @@ export default class extends KanbanComponent {
         if (element.highlighted) {
             this._highlightCard();
         }
+        this._applyFilters();
     }
 
     /**
@@ -783,5 +786,28 @@ export default class extends KanbanComponent {
         let target = event.target.closest(selectors.DUPLICATE);
         let data = Object.assign({}, target.dataset);
         this.reactive.dispatch('duplicateCard', data.id);
+    }
+
+    /**
+     * Apply current filters to this card, hiding it if it does not match the filter criteria.
+     */
+    _applyFilters() {
+        let matchesFilter = true;
+        Object.keys(this.reactive.stateManager.state.filters).forEach(key => {
+            const filtervalue = this.reactive.stateManager.state.filters[key];
+            const card = this.getElement();
+            const title = card.querySelector('.mod_kanban_card_title');
+            if (key == 'title') {
+                const titletext = title.textContent.trim().toLowerCase();
+                if (!titletext.includes(filtervalue.toLowerCase())) {
+                    matchesFilter = false;
+                }
+            }
+        });
+        if (matchesFilter) {
+            this.getElement().classList.remove('d-none');
+        } else {
+            this.getElement().classList.add('d-none');
+        }
     }
 }

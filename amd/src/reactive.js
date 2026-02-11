@@ -24,6 +24,7 @@ export default class extends Reactive {
             ]
         )[0];
 
+        initialData.filters = {};
         this.setInitialState(initialData);
     }
 }

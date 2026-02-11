@@ -14,60 +14,58 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 import {debounce} from 'core/utils';
+import KanbanComponent from 'mod_kanban/kanbancomponent';
 
 /**
  * Filter the cards of a kanban board.
  *
  * @module     mod_kanban/filters
  * @copyright  2025 ISB Bayern
+ * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Initialize the filter for the kanban board.
- * @param {number} id The board id
- */
-export const filters = (id) => {
-    const searchinput = document.querySelector(`input[name="mod_kanban_filter_search-${id}"]`);
-    if (!searchinput) {
-        return;
+export default class extends KanbanComponent {
+    /**
+     * Function to initialize component, called by mustache template.
+     * @param {*} target The id of the HTMLElement to attach to
+     * @returns {BaseComponent} New component attached to the HTMLElement represented by target
+     */
+    static init(target) {
+        let element = document.getElementById(target);
+        return new this({
+            element: element,
+        });
     }
 
-    searchinput.addEventListener('input', debounce((event) => {
-        const input = event.target.closest('input');
-        const searchterm = input.value.trim().toLowerCase();
-        const board = input.closest('.mod_kanban_board');
-        if (!board) {
-            return;
-        }
-        const cards = board.querySelectorAll('.mod_kanban_card');
-        cards.forEach((card) => {
-            const title = card.querySelector('.mod_kanban_card_title');
-            if (!title) {
+    /**
+     * Called after the component was created.
+     */
+    create() {
+        this.id = this.element.dataset.id;
+    }
+
+    /**
+     * Called once when state is ready (also if component is registered after initial state was set), attaching event listeners.
+     */
+    stateReady() {
+        const searchinput = this.getElement();
+        this.addEventListener(this.getElement(), 'input', debounce((event) => {
+            const input = event.target.closest('input');
+            const searchterm = input.value.trim().toLowerCase();
+            const board = input.closest('.mod_kanban_board');
+            if (!board) {
                 return;
             }
-            const titletext = title.textContent.trim().toLowerCase();
-            if (titletext.includes(searchterm)) {
-                card.classList.remove('d-none');
-            } else {
-                card.classList.add('d-none');
-            }
-        });
-    }, 500));
+            this.reactive.dispatch('updateFilter', {type: 'title', value: searchterm});
+        }, 500));
 
-    const closebutton = document.querySelector(`a[data-action="closesearch"]`);
-    const board = searchinput.closest('.mod_kanban_board');
-    if (!board) {
-        return;
-    }
-    if (closebutton) {
-        closebutton.addEventListener('click', function() {
-            searchinput.value = '';
-            const cards = board.querySelectorAll('.mod_kanban_card');
-            cards.forEach((card) => {
-                card.classList.remove('d-none');
+        const closebutton = this.getElement().parentElement.querySelector(`a[data-action="closesearch"]`);
+        if (closebutton) {
+            this.addEventListener(closebutton, 'click', () => {
+                searchinput.value = '';
+                this.reactive.dispatch('removeFilter', {type: 'title'});
             });
-        });
+        }
     }
-};
-
+}
