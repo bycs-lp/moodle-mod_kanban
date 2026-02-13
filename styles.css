@@ -473,3 +473,21 @@ a.mod_kanban_attachment_item {
 .card.mod_kanban_card.mod_kanban_highlighted_card {
     border: 0.2rem solid orange;
 }
+
+.row .mod_kanban_filter_search {
+    width: 50%;
+    min-width: 15rem;
+    max-width: 50rem;
+    margin-left: .7rem;
+}
+
+.mod_kanban_filter_search + .mod_kanban_filter_search_close {
+    position: relative;
+    left: -1.7rem;
+    top: .1rem;
+}
+
+.mod_kanban_filters {
+    position: relative;
+    margin-bottom: 10px;
+}

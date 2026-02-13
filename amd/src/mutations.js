@@ -375,4 +375,28 @@ export default class {
         state.cards.get(cardId).highlighted = value;
         stateManager.setReadOnly(true);
     }
+
+    /**
+     * Update a filter.
+     * @param {*} stateManager StateManager instance.
+     * @param {*} filter Filter object containing type and value.
+     */
+    updateFilter(stateManager, filter) {
+        const state = stateManager.state;
+        stateManager.setReadOnly(false);
+        state.filters[filter.type] = filter.value;
+        stateManager.setReadOnly(true);
+    }
+
+    /**
+     * Remove a filter.
+     * @param {*} stateManager StateManager instance.
+     * @param {*} filter Filter object containing type.
+     */
+    removeFilter(stateManager, filter) {
+        const state = stateManager.state;
+        stateManager.setReadOnly(false);
+        delete state.filters[filter.type];
+        stateManager.setReadOnly(true);
+    }
 }

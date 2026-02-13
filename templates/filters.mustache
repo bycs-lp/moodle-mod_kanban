@@ -1,0 +1,35 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_kanban/filters
+
+    Show a filter form for the kanban board.
+
+    Example context (json):
+    {
+        "id": 2
+    }
+}}
+<input id="mod_kanban_filter_search-{{id}}" name="mod_kanban_filter_search-{{id}}" type="text" class="mod_kanban_filter_search withclear card w-20" placeholder="{{#str}} filtersearchplaceholder, mod_kanban {{/str}}" title="{{#str}} filtersearch, mod_kanban {{/str}}" data-id="{{id}}">
+<a class="btn btn-close mod_kanban_filter_search_close" data-action="closesearch" role="button">
+<span class="visually-hidden">{{#str}} closebuttontitle {{/str}}</span>
+</a>
+{{#js}}
+require(['mod_kanban/filters'], function(filters) {
+    filters.init('mod_kanban_filter_search-{{id}}');
+});
+{{/js}}
