@@ -30,7 +30,7 @@
         "wiplimit": 5,
         "cardcount": 12,
         "collimit": 10,
-<<<<<<< HEAD
+        "limitwarning": true,
         "addcardshere": true
     }
 }}
@@ -39,13 +39,9 @@
     {{#locked}}mod_kanban_locked_column{{/locked}}
     {{#wiplimit}}mod_kanban_column_wiplimit{{/wiplimit}}
     {{#addcardshere}}mod_kanban_addcardshere{{/addcardshere}}
+    {{#collimit}}mod_kanban_column_collimit{{/collimit}}
+    {{#limitwarning}}mod_kanban_limit_warning{{/limitwarning}}
 " id="mod_kanban_column-{{id}}" data-id="{{id}}">
-=======
-        "limitwarning": true
-    }
-}}
-<li class="mod_kanban_column col card{{#autohide}} mod_kanban_autohide{{/autohide}} {{#locked}}mod_kanban_locked_column{{/locked}} {{#wiplimit}}mod_kanban_column_wiplimit{{/wiplimit}} {{#collimit}}mod_kanban_column_collimit{{/collimit}} {{#limitwarning}}mod_kanban_limit_warning{{/limitwarning}}" id="mod_kanban_column-{{id}}" data-id="{{id}}">
->>>>>>> 2466082 (CR)
     <h5 class="mod_kanban_column_title card-title">
     <span class="inplaceeditable inplaceeditable-text"{{#managecolumns}} {{^locked}}data-inplaceeditable="1" {{/locked}}data-component="mod_kanban" data-itemtype="column" data-itemid="{{id}}"
     data-value="{{{title}}}" data-type="text"{{/managecolumns}}>
