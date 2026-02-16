@@ -369,6 +369,8 @@ final class boardmanager_test extends \advanced_testcase {
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessage(get_string('collimitreached', 'kanban', ['coltitle' => 'Testcolumn', 'limit' => 2]));
         $boardmanager->move_card($cardid, 0, $colwithlimit);
+
+        $this->assertEquals($colwithoutlimit, $boardmanager->get_card($cardid)->kanban_column);
     }
 
     /**
