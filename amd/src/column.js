@@ -308,6 +308,10 @@ export default class extends KanbanComponent {
             this.toggleClass(options.addcardshere, 'mod_kanban_addcardshere');
             this.toggleClass(options.collimit > 0, 'mod_kanban_column_collimit');
             this.getElement(selectors.COLMAX).innerHTML = options.collimit;
+            this.toggleClass(
+                options.collimit > 0 && this.getElements(selectors.CARD).length >= options.collimit,
+                'mod_kanban_limit_warning'
+            );
         }
         // Update card count after updating column
         this.getElement(selectors.CARDCOUNT).innerHTML = this.getElements(selectors.CARD).length;

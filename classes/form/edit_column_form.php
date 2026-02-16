@@ -184,6 +184,14 @@ class edit_column_form extends dynamic_form {
             $errors['wipgroup'] = get_string('wiplimitgreaterzero', 'kanban');
         }
 
+        if (!empty($data['collimitenable']) && $data['collimit'] <= 0) {
+            $errors['collimitgroup'] = get_string('collimitgreaterzero', 'kanban');
+        }
+
+        if (!empty($data['wiplimitenable']) && !empty($data['collimitenable']) && $data['wiplimit'] > $data['collimit']) {
+            $errors['wipgroup'] = get_string('wiplimitgreatercollimit', 'kanban');
+        }
+
         return $errors;
     }
 }

@@ -106,6 +106,7 @@ export default class {
             });
             col.cardcount = cardOrder.length;
         }
+        col.limitwarning = col.collimit > 0 && col.cardcount >= col.collimit;
         return col;
     }
 
