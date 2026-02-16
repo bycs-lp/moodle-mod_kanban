@@ -56,11 +56,12 @@
     </h5>
     <div class="mod_kanban_column_stats">
     <span class="badge badge-light mod_kanban_wip">
-        <span class="mod_kanban_cardcount">{{cardcount}}</span>
+        <span class="mod_kanban_cardcount" title="{{#str}} cardcount, mod_kanban{{/str}}">{{cardcount}}</span>
         <span class="mod_kanban_colinfo" title="{{#str}} colmax, mod_kanban{{/str}}"> / <span class="mod_kanban_colmax">{{collimit}}</span></span>
          {{#pix}} e/template, core, {{#str}} cardcount, mod_kanban{{/str}} {{/pix}}
     </span>
-    <span class="badge badge-light mod_kanban_wipinfo"><span class="mod_kanban_wiplimit">{{wiplimit}}</span> / {{#pix}} t/user, core, {{#str}} wiplimit, mod_kanban{{/str}} {{/pix}}</span>
+    <span class="badge badge-light mod_kanban_wipinfo">
+        <span class="mod_kanban_wiplimit" title="{{#str}} wiplimit, mod_kanban{{/str}}">{{wiplimit}}</span> / {{#pix}} t/user, core, {{#str}} wiplimit, mod_kanban{{/str}} {{/pix}}</span>
     </div>
     <div class="mod_kanban_hidden_actions">
         <button data-action="show_hidden" class="btn btn-icon icon-no-margin p-0">{{#pix}} i/show, core, {{#str}} showhidden, mod_kanban {{/str}} {{/pix}}</button>
