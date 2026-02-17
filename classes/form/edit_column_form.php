@@ -68,6 +68,10 @@ class edit_column_form extends dynamic_form {
         $mform->setType('wiplimitenable', PARAM_BOOL);
 
         $mform->disabledIf('wiplimit', 'wiplimitenable', 'notchecked');
+
+        $mform->addElement('advcheckbox', 'addcardshere', get_string('addcardshere', 'kanban'));
+        $mform->setType('addcardshere', PARAM_BOOL);
+        $mform->addHelpButton('addcardshere', 'addcardshere', 'kanban');
     }
 
     /**
@@ -132,10 +136,11 @@ class edit_column_form extends dynamic_form {
         $column->title = html_entity_decode($column->title, ENT_COMPAT, 'UTF-8');
         $column->boardid = $column->kanban_board;
         $options = json_decode($column->options);
-        $column->autoclose = $options->autoclose;
-        $column->autohide = $options->autohide;
+        $column->autoclose = !empty($options->autoclose);
+        $column->autohide = !empty($options->autohide);
         $column->wiplimitenable = !empty($options->wiplimit);
         $column->wiplimit = (empty($options->wiplimit) ? 0 : $options->wiplimit);
+        $column->addcardshere = !empty($options->addcardshere);
         $this->set_data($column);
     }
 

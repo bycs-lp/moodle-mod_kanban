@@ -35,10 +35,26 @@
         "history": true,
         "heading": "Course board",
         "ismyuserboard": true,
-        "usenumbers": true
+        "usenumbers": true,
+        "hasaddcards": true
     }
 }}
-<div class="container-fluid mod_kanban_board {{#locked}}mod_kanban_board_locked_columns{{/locked}} {{#addcard}}mod_kanban_addcards{{/addcard}} {{#managecolumns}}mod_kanban_managecolumns{{/managecolumns}} {{#manageassignedcards}}mod_kanban_manageassignedcards{{/manageassignedcards}} {{#manageallcards}}mod_kanban_manageallcards{{/manageallcards}} {{#hastemplate}}mod_kanban_hastemplate{{/hastemplate}} {{#istemplate}}mod_kanban_istemplate{{/istemplate}} {{#history}}mod_kanban_history{{/history}} {{#userboardsonly}}mod_kanban_userboardsonly{{/userboardsonly}} {{#iscourseboard}}mod_kanban_iscourseboard{{/iscourseboard}} {{#manageboard}}mod_kanban_manageboard{{/manageboard}} {{#ismyuserboard}}mod_kanban_ismyuserboard{{/ismyuserboard}} {{#usenumbers}}mod_kanban_usenumbers{{/usenumbers}}" id="mod_kanban_board-{{id}}" data-id="{{id}}" data-cmid="{{cmid}}">
+<div class="container-fluid mod_kanban_board
+    {{#locked}}mod_kanban_board_locked_columns{{/locked}}
+    {{#addcard}}mod_kanban_addcards{{/addcard}}
+    {{#managecolumns}}mod_kanban_managecolumns{{/managecolumns}}
+    {{#manageassignedcards}}mod_kanban_manageassignedcards{{/manageassignedcards}}
+    {{#manageallcards}}mod_kanban_manageallcards{{/manageallcards}}
+    {{#hastemplate}}mod_kanban_hastemplate{{/hastemplate}}
+    {{#istemplate}}mod_kanban_istemplate{{/istemplate}}
+    {{#history}}mod_kanban_history{{/history}}
+    {{#userboardsonly}}mod_kanban_userboardsonly{{/userboardsonly}}
+    {{#iscourseboard}}mod_kanban_iscourseboard{{/iscourseboard}}
+    {{#manageboard}}mod_kanban_manageboard{{/manageboard}}
+    {{#ismyuserboard}}mod_kanban_ismyuserboard{{/ismyuserboard}}
+    {{#usenumbers}}mod_kanban_usenumbers{{/usenumbers}}
+    {{#hasaddcards}}mod_kanban_hasaddcards{{/hasaddcards}}
+" id="mod_kanban_board-{{id}}" data-id="{{id}}" data-cmid="{{cmid}}">
     <div class="row mod_kanban_board_head" data-id="{{id}}">
         <div class="col mod_kanban_heading">
             <h3>{{heading}}</h3>
