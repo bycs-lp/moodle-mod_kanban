@@ -69,6 +69,16 @@ class edit_column_form extends dynamic_form {
 
         $mform->disabledIf('wiplimit', 'wiplimitenable', 'notchecked');
 
+        $collimitarray = [];
+        $collimitarray[] = $mform->createElement('advcheckbox', 'collimitenable', get_string('collimitenable', 'kanban'));
+        $collimitarray[] = $mform->createElement('text', 'collimit', get_string('collimit', 'kanban'), ['size' => '5']);
+        $mform->addGroup($collimitarray, 'collimitgroup', '', '', false);
+
+        $mform->setType('collimit', PARAM_INT);
+        $mform->setType('collimitenable', PARAM_BOOL);
+
+        $mform->disabledIf('collimit', 'collimitenable', 'notchecked');
+
         $mform->addElement('advcheckbox', 'addcardshere', get_string('addcardshere', 'kanban'));
         $mform->setType('addcardshere', PARAM_BOOL);
         $mform->addHelpButton('addcardshere', 'addcardshere', 'kanban');
@@ -141,6 +151,8 @@ class edit_column_form extends dynamic_form {
         $column->wiplimitenable = !empty($options->wiplimit);
         $column->wiplimit = (empty($options->wiplimit) ? 0 : $options->wiplimit);
         $column->addcardshere = !empty($options->addcardshere);
+        $column->collimitenable = !empty($options->collimit);
+        $column->collimit = (empty($options->collimit) ? 0 : $options->collimit);
         $this->set_data($column);
     }
 
@@ -170,6 +182,14 @@ class edit_column_form extends dynamic_form {
 
         if (!empty($data['wiplimitenable']) && $data['wiplimit'] <= 0) {
             $errors['wipgroup'] = get_string('wiplimitgreaterzero', 'kanban');
+        }
+
+        if (!empty($data['collimitenable']) && $data['collimit'] <= 0) {
+            $errors['collimitgroup'] = get_string('collimitgreaterzero', 'kanban');
+        }
+
+        if (!empty($data['wiplimitenable']) && !empty($data['collimitenable']) && $data['wiplimit'] > $data['collimit']) {
+            $errors['wipgroup'] = get_string('wiplimitgreatercollimit', 'kanban');
         }
 
         return $errors;

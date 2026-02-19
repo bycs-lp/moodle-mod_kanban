@@ -29,7 +29,9 @@
         "locked": false,
         "wiplimit": 5,
         "cardcount": 12,
-        "addcardshere": true,
+        "collimit": 10,
+        "limitwarning": true,
+        "addcardshere": true
     }
 }}
 <li class="mod_kanban_column col card 
@@ -37,6 +39,8 @@
     {{#locked}}mod_kanban_locked_column{{/locked}}
     {{#wiplimit}}mod_kanban_column_wiplimit{{/wiplimit}}
     {{#addcardshere}}mod_kanban_addcardshere{{/addcardshere}}
+    {{#collimit}}mod_kanban_column_collimit{{/collimit}}
+    {{#limitwarning}}mod_kanban_limit_warning{{/limitwarning}}
 " id="mod_kanban_column-{{id}}" data-id="{{id}}">
     <h5 class="mod_kanban_column_title card-title">
     <span class="inplaceeditable inplaceeditable-text"{{#managecolumns}} {{^locked}}data-inplaceeditable="1" {{/locked}}data-component="mod_kanban" data-itemtype="column" data-itemid="{{id}}"
@@ -47,9 +51,13 @@
     </span>
     </h5>
     <div class="mod_kanban_column_stats">
-    <span class="badge badge-light mod_kanban_addcardshere_icon" title="{{#str}} addingcardsallowed, mod_kanban{{/str}}">{{#pix}} t/add, core, {{#str}} addingcardsallowed, mod_kanban{{/str}} {{/pix}}</span>
-    <span class="badge badge-light mod_kanban_wip"><span class="mod_kanban_cardcount">{{cardcount}}</span> {{#pix}} e/template, core, {{#str}} cardcount, mod_kanban{{/str}} {{/pix}}</span>
-    <span class="badge badge-light mod_kanban_wipinfo"><span class="mod_kanban_wiplimit">{{wiplimit}}</span> / {{#pix}} t/user, core, {{#str}} wiplimit, mod_kanban{{/str}} {{/pix}}</span>
+    <span class="badge badge-light mod_kanban_wip">
+        <span class="mod_kanban_cardcount" title="{{#str}} cardcount, mod_kanban{{/str}}">{{cardcount}}</span>
+        <span class="mod_kanban_colinfo" title="{{#str}} colmax, mod_kanban{{/str}}"> / <span class="mod_kanban_colmax">{{collimit}}</span></span>
+         {{#pix}} e/template, core, {{#str}} cardcount, mod_kanban{{/str}} {{/pix}}
+    </span>
+    <span class="badge badge-light mod_kanban_wipinfo">
+        <span class="mod_kanban_wiplimit" title="{{#str}} wiplimit, mod_kanban{{/str}}">{{wiplimit}}</span> / {{#pix}} t/user, core, {{#str}} wiplimit, mod_kanban{{/str}} {{/pix}}</span>
     </div>
     <div class="mod_kanban_hidden_actions">
         <button data-action="show_hidden" class="btn btn-icon icon-no-margin p-0">{{#pix}} i/show, core, {{#str}} showhidden, mod_kanban {{/str}} {{/pix}}</button>
