@@ -1539,4 +1539,70 @@ class boardmanager {
 
         return false;
     }
+
+    /**
+     * Returns the course module ID.
+     *
+     * @return int Course module ID
+     */
+    public function get_cmid(): int {
+        return $this->cmid;
+    }
+
+    /**
+     * Returns the titles of the columns in the board, ordered by the board sequence.
+     *
+     * @return array Array of column titles
+     */
+    public function get_columntitles(): array {
+        global $DB;
+        $sequence = $this->board->sequence;
+        if (empty($sequence)) {
+            return [];
+        }
+        $columns = $DB->get_records('kanban_column', ['kanban_board' => $this->board->id], '', 'id, title');
+        $columntitles = [];
+        foreach (explode(',', $sequence) as $columnid) {
+            if (isset($columns[$columnid])) {
+                $columntitles[] = $columns[$columnid]->title;
+            }
+        }
+        return $columntitles;
+    }
+
+    /**
+     * Returns the titles of the cards in the board, ordered by the board and column sequence.
+     *
+     * @return array Array of card titles
+     */
+    public function get_cardtitles(): array {
+        global $DB;
+        $bs = $this->board->sequence;
+        if (empty($bs)) {
+            return [];
+        }
+        $columnsequence = explode(',', $bs);
+        $cs = $DB->get_records_sql(
+            "SELECT id, sequence FROM {kanban_column} WHERE kanban_board = :boardid",
+            ['boardid' => $this->board->id]
+        );
+        $cardsequences = array_map(function ($c) {
+            return explode(',', $c->sequence);
+        }, $cs);
+        $maxcards = max(array_map('count', $cardsequences));
+        [$sql, $params] = $DB->get_in_or_equal($columnsequence, SQL_PARAMS_NAMED);
+        $sql = "kanban_column $sql AND kanban_board = :boardid";
+        $params['boardid'] = $this->board->id;
+        $cards = $DB->get_records_select('kanban_card', $sql, $params, '', 'id, title');
+        $cardtitles = [];
+
+        for ($i = 0; $i < $maxcards; $i++) {
+            foreach ($columnsequence as $columnkey => $columnid) {
+                if (isset($cardsequences[$columnid][$i])) {
+                    $cardtitles[$i][$columnid] = $cards[$cardsequences[$columnid][$i]]->title ?? '';
+                }
+            }
+        }
+        return $cardtitles;
+    }
 }
