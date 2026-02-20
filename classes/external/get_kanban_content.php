@@ -134,6 +134,12 @@ class get_kanban_content extends external_api {
                             VALUE_OPTIONAL,
                             false
                         ),
+                        'showauthors' => new external_value(
+                            PARAM_BOOL,
+                            'whether to show authors in the board',
+                            VALUE_OPTIONAL,
+                            false
+                        ),
                     ]),
                     'columns' => new external_multiple_structure(
                         new external_single_structure(
@@ -210,6 +216,12 @@ class get_kanban_content extends external_api {
                                     'original creator of the card',
                                     VALUE_OPTIONAL,
                                     0
+                                ),
+                                'createdbyname' => new external_value(
+                                    PARAM_TEXT,
+                                    'name of the original creator of the card',
+                                    VALUE_OPTIONAL,
+                                    ''
                                 ),
                                 'canedit' => new external_value(
                                     PARAM_BOOL,
@@ -384,6 +396,7 @@ class get_kanban_content extends external_api {
         $groupid = $kanbanboard->groupid;
 
         $kanbanboard->heading = get_string('courseboard', 'mod_kanban');
+        $kanbanboard->showauthors = !empty($kanban->showauthors);
         $groupselector = null;
         $groupmode = groups_get_activity_groupmode($cminfo, $course);
 
@@ -543,6 +556,11 @@ class get_kanban_content extends external_api {
             foreach ($kanbancards as $card) {
                 if (empty($kanbanassignees[$card->id])) {
                     $kanbanassignees[$card->id] = [];
+                }
+                if (!empty($card->createdby) && !empty($kanbanusers[$card->createdby])) {
+                    $card->createdbyname = $kanbanusers[$card->createdby]['fullname'];
+                } else {
+                    $card->createdbyname = '';
                 }
                 $card->title = clean_param($card->title, PARAM_TEXT);
                 $card->assignees = $kanbanassignees[$card->id];
