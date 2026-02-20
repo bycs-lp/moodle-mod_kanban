@@ -71,6 +71,7 @@ export default class {
             users: JSON.parse(JSON.stringify(state.users)),
             usenumbers: state.common.usenumbers,
             hasaddcards: state.board.hasaddcards ?? false,
+            showauthors: state.board.showauthors ?? false,
         }, this.exportCapabilities(state));
     }
 
@@ -130,6 +131,7 @@ export default class {
         }
         card.cardid = card.id;
         card.hasassignees = card.assignees.length > 0;
+        card.createdbyname = card.createdbyname ?? '';
         let options = JSON.parse(card.options);
         if (card.hasassignees) {
             card.assignees = card.assignees.map((userid) => {
