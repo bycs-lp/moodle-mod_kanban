@@ -63,6 +63,7 @@ class restore_kanban_activity_task extends restore_activity_task {
     public static function define_decode_rules(): array {
         $rules = [];
         $rules[] = new restore_decode_rule('KANBANVIEWBYID', '/mod/kanban/view.php?id=$1', 'course_module');
+        $rules[] = new restore_decode_rule('KANBANVIEWCARDID', '/mod/kanban/view.php?cardid=$1', 'kanban_card_id');
         return $rules;
     }
 }

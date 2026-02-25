@@ -502,3 +502,14 @@ a.mod_kanban_attachment_item {
 .mod_kanban_column_stats .icon {
     margin: 0;
 }
+
+.mod_kanban_notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border: 1px solid black;
+    z-index: 1500;
+    width: max-content;
+    height: max-content;
+    padding: 0.5rem;
+}

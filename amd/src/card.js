@@ -32,6 +32,7 @@ import {get_string as getString} from 'core/str';
 import Templates from 'core/templates';
 import KanbanComponent from 'mod_kanban/kanbancomponent';
 import Log from 'core/log';
+import KanbanNotification from 'mod_kanban/notification';
 
 /**
  * Component representing a card in a kanban board.
@@ -178,6 +179,11 @@ export default class extends KanbanComponent {
             'click',
             this._showDetailsModal
         );
+        this.addEventListener(
+            this.getElement(selectors.COPYCARDLINK),
+            'click',
+            this._copyCardLink
+        );
 
         this.draggable = false;
         this.dragdrop = new DragDrop(this);
@@ -317,7 +323,6 @@ export default class extends KanbanComponent {
             title: title,
             footer: footer.html,
             removeOnClose: true,
-            show: true,
         });
         modal.modal[0].dataset.id = id;
         modal.modal[0].classList.add('mod_kanban_discussion_modal');
@@ -333,6 +338,7 @@ export default class extends KanbanComponent {
                 this._clickDetailsButton(event);
             }
         });
+        modal.show();
         this._renderDiscussionMessages();
         this.reactive.dispatch('getDiscussionUpdates', this.id);
     }
@@ -809,5 +815,37 @@ export default class extends KanbanComponent {
         } else {
             this.getElement().classList.add('d-none');
         }
+    }
+
+    /**
+     * Copy card link to clipboard
+     */
+    _copyCardLink() {
+        navigator.clipboard.writeText(M.cfg.wwwroot + '/mod/kanban/view.php?cardid=' + this.id).then(() => {
+            this._showCopySuccess();
+            return true;
+        }).catch((error) => {
+            this._showCopyError(error);
+        });
+    }
+
+    /**
+     * Show success message after copying card link.
+     */
+    _showCopySuccess() {
+        Str.get_string('cardlinkcopied', 'mod_kanban').then((message) => {
+            KanbanNotification.show(message);
+            return true;
+        }).catch((error) => Log.debug(error));
+    }
+
+    /**
+     * Show error message after failing to copy card link.
+     */
+    _showCopyError() {
+        Str.get_string('copycardlinkfailed', 'mod_kanban').then((message) => {
+            KanbanNotification.show(message);
+            return true;
+        }).catch((error) => Log.debug(error));
     }
 }
