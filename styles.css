@@ -510,3 +510,20 @@ a.mod_kanban_attachment_item {
     margin-left: var(--bs-card-spacer-x);
     padding-bottom: var(--bs-card-spacer-y);
 }
+
+.mod_kanban_notification {
+    border: 1px solid black;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    width: max-content;
+    height: max-content;
+    padding: 0.5rem;
+    display: block;
+    top: 10px;
+    left: 10px;
+}
+
+.mod_kanban_notification_container {
+    position: absolute;
+    z-index: 1000;
+}
