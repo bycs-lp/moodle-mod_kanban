@@ -1583,10 +1583,7 @@ class boardmanager {
             return [];
         }
         $columnsequence = explode(',', $bs);
-        $cs = $DB->get_records_sql(
-            "SELECT id, sequence FROM {kanban_column} WHERE kanban_board = :boardid",
-            ['boardid' => $this->board->id]
-        );
+        $cs = $DB->get_records('kanban_column', ['kanban_board' => $this->board->id], '', 'id, sequence');
         $cardsequences = array_map(function ($c) {
             return explode(',', $c->sequence);
         }, $cs);
