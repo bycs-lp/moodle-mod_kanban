@@ -557,10 +557,9 @@ class get_kanban_content extends external_api {
                 if (empty($kanbanassignees[$card->id])) {
                     $kanbanassignees[$card->id] = [];
                 }
+                $card->createdbyname = '';
                 if (!empty($card->createdby) && !empty($kanbanusers[$card->createdby])) {
                     $card->createdbyname = $kanbanusers[$card->createdby]['fullname'];
-                } else {
-                    $card->createdbyname = '';
                 }
                 $card->title = clean_param($card->title, PARAM_TEXT);
                 $card->assignees = $kanbanassignees[$card->id];
