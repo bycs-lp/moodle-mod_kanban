@@ -68,6 +68,9 @@ class mod_kanban_mod_form extends moodleform_mod {
         $mform->setDefault('linknumbers', 1);
         $mform->setType('linknumbers', PARAM_INT);
 
+        $mform->addElement('advcheckbox', 'showauthors', get_string('showauthors', 'mod_kanban'));
+        $mform->addHelpButton('showauthors', 'showauthors', 'mod_kanban');
+
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons(true, null, null);

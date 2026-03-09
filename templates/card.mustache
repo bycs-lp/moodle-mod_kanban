@@ -31,6 +31,7 @@
         "number": 12,
         "hasaddcards": true,
         "addcardshere": true,
+        "createdbyname": "Berti Beispiel"
     }
 }}
 <li style="{{#background}}background-color: {{background}}{{/background}}" class="mod_kanban_card card{{#completed}} mod_kanban_closed{{/completed}} {{^hasassignees}}mod_kanban_unassigned{{/hasassignees}} {{#hasdescription}}mod_kanban_hasdescription{{/hasdescription}} {{#hasattachment}}mod_kanban_hasattachment{{/hasattachment}} {{#hasdiscussion}}mod_kanban_hasdiscussion{{/hasdiscussion}} {{#selfassigned}}mod_kanban_selfassigned{{/selfassigned}} {{#discussion}}mod_kanban_hasdiscussion{{/discussion}} {{#canedit}}mod_kanban_canedit{{/canedit}}" id="mod_kanban_card-{{id}}" data-id="{{id}}" data-columnid="{{kanban_column}}" data-number="{{number}}">
@@ -70,6 +71,9 @@
             <button class="mod_kanban_detail_trigger btn btn-icon icon-no-margin p-0">
             {{#pix}} e/file-text, core, {{#str}} showdescription, mod_kanban {{/str}} {{/pix}}
             </button>
+        </div>
+        <div class="mod_kanban_author">
+            {{createdbyname}}
         </div>
     </div>
     {{>mod_kanban/addcard}}

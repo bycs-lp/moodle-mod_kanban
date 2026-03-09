@@ -483,6 +483,7 @@ class boardmanager {
             'options' => '{}',
             'description' => '',
             'createdby' => $USER->id,
+            'createdbyname' => fullname($USER),
         ];
         $defaultsfixed = [
             'kanban_board' => $this->board->id,
