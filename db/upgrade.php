@@ -145,5 +145,19 @@ function xmldb_kanban_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025120801, 'kanban');
     }
 
+    if ($oldversion < 2026022001) {
+        // Define field showauthors to be added to kanban.
+        $table = new xmldb_table('kanban');
+        $field = new xmldb_field('showauthors', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'linknumbers');
+
+        // Conditionally launch add field showauthor.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Kanban savepoint reached.
+        upgrade_mod_savepoint(true, 2026022001, 'kanban');
+    }
+
     return true;
 }
