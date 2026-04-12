@@ -26,10 +26,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array (
-        array (
-                'eventname' => '\core\event\user_enrolment_deleted',
-                'callback'  => 'mod_kanban_observer::remove_assignments',
-                'internal'  => false,
-        ),
-);
+$observers = [
+    [
+        'eventname' => '\core\event\user_enrolment_deleted',
+        'callback'  => 'mod_kanban_observer::remove_assignments',
+        'internal'  => false,
+    ],
+];

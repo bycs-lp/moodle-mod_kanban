@@ -49,13 +49,13 @@ class mod_kanban_observer {
         if (!$cp->lastenrol) {
             return;
         }
-        $userid = $event->objectid;
+        $userid = $cp->userid;
         $params = ['userid' => $userid, 'courseid' => $cp->courseid];
 
         // Delete all assignments for the user.
         $DB->delete_records_select(
             'kanban_assignee',
-            "kanban_card IN (SELECT id FROM {kanban_card} c
+            "kanban_card IN (SELECT c.id FROM {kanban_card} c
             JOIN {kanban_board} b ON b.id = c.kanban_board
             JOIN {kanban} k ON k.id = b.kanban_instance
             WHERE k.course = :courseid)
