@@ -23,11 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Event observer.
- * Removes all Assignments for a specific user if a user is unenrolled completely from the course.
+ * Removes all assignments for a specific user if a user is unenrolled completely from the course.
  *
  * @package    mod_kanban
  * @copyright  2026 ISB Bayern
@@ -35,14 +33,13 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_kanban_observer {
-
     /**
      * Triggered via user_enrolment_deleted event.
      *
      * @param \core\event\user_enrolment_deleted $event
      * @return void
      */
-    public static function remove_assignments (\core\event\user_enrolment_deleted $event): void {
+    public static function remove_assignments(\core\event\user_enrolment_deleted $event): void {
         global $DB;
 
         // Get user enrolment info from event.
@@ -53,26 +50,27 @@ class mod_kanban_observer {
             return;
         }
         $userid = $event->objectid;
-        $params = array('userid' => $userid, 'courseid' => $cp->courseid);
+        $params = ['userid' => $userid, 'courseid' => $cp->courseid];
 
         // Delete all assignments for the user.
-        $DB->delete_records_select('kanban_assignee',
-                "kanban_card IN (SELECT id FROM {kanban_card} as c 
-                JOIN {kanban_board} as b ON b.id = c.kanban_board 
-                JOIN {kanban} as k ON k.id = b.kanban_instance
-                WHERE k.course = :courseid)
-                AND userid= :userid",
-                $params
+        $DB->delete_records_select(
+            'kanban_assignee',
+            "kanban_card IN (SELECT id FROM {kanban_card} c
+            JOIN {kanban_board} b ON b.id = c.kanban_board
+            JOIN {kanban} k ON k.id = b.kanban_instance
+            WHERE k.course = :courseid)
+            AND userid = :userid",
+            $params
         );
 
         // Delete all calendar events for the user.
-        $DB->delete_records_select('event',
-                "instance IN (SELECT id FROM {kanban} as k 
-                WHERE k.course = :courseid)
-                AND userid= :userid
-                AND modulename = 'kanban'",
-                $params
+        $DB->delete_records_select(
+            'event',
+            "instance IN (SELECT id FROM {kanban} k
+            WHERE k.course = :courseid)
+            AND userid = :userid
+            AND modulename = 'kanban'",
+            $params
         );
     }
 }
-
