@@ -24,11 +24,25 @@
         "id": 2
     }
 }}
-<input id="mod_kanban_filter_search-{{id}}" name="mod_kanban_filter_search-{{id}}" type="text" class="mod_kanban_filter_search withclear card w-20" placeholder="{{#str}} filtersearchplaceholder, mod_kanban {{/str}}" title="{{#str}} filtersearch, mod_kanban {{/str}}" data-id="{{id}}">
-<span style="display:inline-block; width:4px;"></span>
-<a class="btn btn-close mod_kanban_filter_search_close" data-action="closesearch" role="button">
-<span class="visually-hidden">{{#str}} closebuttontitle {{/str}}</span>
+<input
+    id="mod_kanban_filter_search-{{id}}"
+    name="mod_kanban_filter_search-{{id}}"
+    type="search"
+    class="mod_kanban_filter_search withclear card w-20"
+    placeholder="{{#str}} filtersearchplaceholder, mod_kanban {{/str}}"
+    title="{{#str}} filtersearch, mod_kanban {{/str}}"
+    data-id="{{id}}"
+>
+<a
+    role="button"
+    class="btn btn-close mod_kanban_filter_search_close"
+    data-action="closesearch"
+    aria-label="{{#str}} closebuttontitle {{/str}}"
+    title="{{#str}} closebuttontitle {{/str}}"
+>
+    <i class="fas fa-times" aria-hidden="true"></i>
 </a>
+
 {{#js}}
 require(['mod_kanban/filters'], function(filters) {
     filters.init('mod_kanban_filter_search-{{id}}');
