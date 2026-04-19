@@ -512,7 +512,7 @@ a.mod_kanban_attachment_item {
 }
 
 .mod_kanban_notification {
-    border: 1px solid black;
+    border: 1px solid grey;
     border-radius: var(--bs-border-radius);
     background-color: var(--bs-body-bg);
     width: max-content;

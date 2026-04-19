@@ -16,6 +16,7 @@
 import {render as renderTemplate} from 'core/templates';
 import Log from 'core/log';
 import selectors from 'mod_kanban/selectors';
+import {debounce} from 'core/utils';
 
 /**
  * Helper to show small notifications on the kanban board.
@@ -60,7 +61,9 @@ export default class KanbanNotification {
             notification.remove();
         }, 2000);
         document.addEventListener('pointermove', () => {
-            notification.remove();
+            debounce(() => {
+                notification.remove();
+            }, 500)();
         }, {once: true});
     }
 }
