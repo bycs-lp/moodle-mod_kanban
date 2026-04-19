@@ -15,21 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event observer.
+ * Hook callbacks for mod_kanban.
  *
- * @package   mod_kanban
- * @category  event
- * @copyright 2026 ISB Bayern
- * @author    Thomas Schönlein
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_kanban
+ * @copyright   2026, ISB Bayern
+ * @author      Thomas Schönlein
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$observers = [
-    [
-        'eventname' => '\core\event\user_enrolment_deleted',
-        'callback'  => 'mod_kanban_observer::remove_assignments',
-        'internal'  => false,
-    ],
+$callbacks = [
+        [
+                'hook' => \core_enrol\hook\before_user_enrolment_removed::class,
+                'callback' => \mod_kanban\hook_callbacks::class . '::handle_user_unenrolment',
+        ],
 ];
