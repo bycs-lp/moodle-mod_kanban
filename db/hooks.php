@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,21 +12,21 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for mod_kanban
+ * Hook callbacks for mod_kanban.
  *
  * @package     mod_kanban
- * @copyright   2023-2026 ISB Bayern
- * @author      Stefan Hanauska <stefan.hanauska@csg-in.de>
+ * @copyright   2026, ISB Bayern
+ * @author      Thomas Schönlein
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_kanban';
-$plugin->release = '0.3.7';
-$plugin->version = 2026041900;
-$plugin->requires = 2022112800;
-$plugin->supported = [405, 501];
-$plugin->maturity = MATURITY_STABLE;
+$callbacks = [
+        [
+                'hook' => \core_enrol\hook\before_user_enrolment_removed::class,
+                'callback' => \mod_kanban\hook_callbacks::class . '::handle_user_unenrolment',
+        ],
+];
