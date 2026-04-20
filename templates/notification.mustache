@@ -1,5 +1,5 @@
 {{!
-    This file is part of Moodle - https://moodle.org/
+    This file is part of Moodle - http://moodle.org/
 
     Moodle is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,17 +15,16 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_kanban/addcard
+    @template mod_kanban/notification
 
-    Template for the whole kanban board.
+    TODO describe template notification
 
     Example context (json):
     {
-        "id": 7,
-        "kanban_column": 4
+        "message": "Card #12 has been moved to 'In Progress'",
+        "timestamp": 123456789
     }
 }}
-
-<div class="mod_kanban_addcard_container row" data-id="{{^kanban_column}}0{{/kanban_column}}{{#kanban_column}}{{id}}{{/kanban_column}}">
-    <button class="mod_kanban_addcard btn btn-icon icon-no-margin p-0{{^addcard}} hidden{{/addcard}}" id="mod_kanban_addcard_{{id}}" data-action="add_card" data-columnid="{{#kanban_column}}{{kanban_column}}{{/kanban_column}}{{^kanban_column}}{{id}}{{/kanban_column}}" data-id="{{id}}">{{#pix}} t/add, core, {{#str}} addcard, mod_kanban {{/str}} {{/pix}}</button>
+<div class="mod_kanban_notification" data-timestamp="{{timestamp}}">
+    {{message}}
 </div>
