@@ -267,8 +267,10 @@ export default class extends KanbanComponent {
      */
     _columnUpdated({element}) {
         const el = this.getElement(selectors.COLUMNINNER, this.id);
+        let cardcount = this.getElements(selectors.CARD).length;
         if (element.sequence !== undefined) {
             let sequence = element.sequence.split(',');
+            cardcount = sequence.length;
             // Remove all cards from frontend that are no longer present in the database.
             [...el.children]
                 .forEach((node) => {
@@ -309,12 +311,12 @@ export default class extends KanbanComponent {
             this.toggleClass(options.collimit > 0, 'mod_kanban_column_collimit');
             this.getElement(selectors.COLMAX).innerHTML = options.collimit;
             this.toggleClass(
-                options.collimit > 0 && this.getElements(selectors.CARD).length >= options.collimit,
+                options.collimit > 0 && cardcount >= options.collimit,
                 'mod_kanban_limit_warning'
             );
         }
         // Update card count after updating column
-        this.getElement(selectors.CARDCOUNT).innerHTML = this.getElements(selectors.CARD).length;
+        this.getElement(selectors.CARDCOUNT).innerHTML = cardcount;
         // Enable/disable dragging (e.g. if column is locked).
         this.checkDragging();
     }
