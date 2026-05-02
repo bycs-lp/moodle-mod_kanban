@@ -88,7 +88,7 @@ class boardmanager {
         global $DB;
         $this->kanban = $DB->get_record('kanban', ['id' => $instance], '*', MUST_EXIST);
         if (!$dontloadcm) {
-             [$this->course, $this->cminfo] = get_course_and_cm_from_instance($this->kanban->id, 'kanban');
+            [$this->course, $this->cminfo] = get_course_and_cm_from_instance($this->kanban->id, 'kanban');
             $this->cmid = $this->cminfo->id;
         }
     }
@@ -103,6 +103,8 @@ class boardmanager {
         $this->board = helper::get_cached_board($id);
         if (empty($this->cminfo)) {
             $this->load_instance($this->board->kanban_instance);
+        } else {
+            helper::check_consistency_by_object($this->board, $this->cminfo);
         }
     }
 
@@ -585,7 +587,12 @@ class boardmanager {
 
         try {
             $transaction = $DB->start_delegated_transaction();
-            $sourcecolumn = $DB->get_record('kanban_column', ['id' => $card->kanban_column]);
+            $sourcecolumn = $DB->get_record(
+                'kanban_column',
+                ['id' => $card->kanban_column, 'kanban_board' => $this->board->id],
+                '*',
+                MUST_EXIST
+            );
 
             if ($card->kanban_column == $columnid) {
                 $update = [
@@ -597,7 +604,12 @@ class boardmanager {
                 $transaction->allow_commit();
                 $this->formatter->put('columns', $update);
             } else {
-                $targetcolumn = $DB->get_record('kanban_column', ['id' => $columnid]);
+                $targetcolumn = $DB->get_record(
+                    'kanban_column',
+                    ['id' => $columnid, 'kanban_board' => $this->board->id],
+                    '*',
+                    MUST_EXIST
+                );
 
                 $options = json_decode($targetcolumn->options);
                 $wiplimit = $options->wiplimit ?? 0;
@@ -917,9 +929,9 @@ class boardmanager {
      *
      * @param int $cardid Id of the card
      * @param string $message Message
-     * @return void
+     * @return int The id of the discussion comment
      */
-    public function add_discussion_message(int $cardid, string $message): void {
+    public function add_discussion_message(int $cardid, string $message): int {
         global $DB, $USER;
         $card = $this->get_card($cardid);
         $update = ['kanban_card' => $cardid, 'content' => $message, 'userid' => $USER->id, 'timecreated' => time()];
@@ -947,6 +959,8 @@ class boardmanager {
         // Do not write username to history.
         unset($update['username']);
         $this->write_history('added', constants::MOD_KANBAN_DISCUSSION, $update, $card->kanban_column, $cardid);
+
+        return $update['id'];
     }
 
     /**
@@ -1602,5 +1616,20 @@ class boardmanager {
             }
         }
         return $cardtitles;
+    }
+
+    /**
+     * Returns the course module ID for a given board ID.
+     *
+     * @param int $boardid Board ID
+     * @return int Course module ID
+     */
+    public static function get_cmid_for_board(int $boardid): int {
+        global $DB;
+        $sql = "SELECT cm.id
+            FROM {course_modules} cm
+            JOIN {modules} m ON m.id = cm.module AND m.name = 'kanban'
+            JOIN {kanban_board} b ON b.kanban_instance = cm.instance AND b.id = :boardid";
+        return $DB->get_field_sql($sql, ['boardid' => $boardid]);
     }
 }

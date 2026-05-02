@@ -104,6 +104,7 @@ $string['history_card_updated'] = '{$a->username} changed card title to "{$a->ti
 $string['history_discussion_added'] = '{$a->username} added discussion message';
 $string['history_discussion_deleted'] = '{$a->username} deleted discussion message';
 $string['historyfor'] = 'History for card "{$a}"';
+$string['invalidboard'] = "Board doesn't belong to the selected course module";
 $string['invalidcardboardcombination'] = "Card doesn't belong to selected board.";
 $string['kanban:addcard'] = 'Add a card to a Kanban board';
 $string['kanban:addinstance'] = 'Add a Kanban board';
