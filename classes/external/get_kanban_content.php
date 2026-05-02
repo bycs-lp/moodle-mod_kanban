@@ -568,7 +568,11 @@ class get_kanban_content extends external_api {
                 $card->hasdescription = !empty($card->description);
                 $card->discussions = [];
                 $card->description = file_rewrite_pluginfile_urls(
-                    format_text($card->description),
+                    format_text(
+                        $card->description,
+                        $card->descriptionformat,
+                        ['context' => $context]
+                    ),
                     'pluginfile.php',
                     $context->id,
                     'mod_kanban',
