@@ -38,7 +38,7 @@ use stdClass;
  * Privacy provider for mod_kanban.
  *
  * @package    mod_kanban
- * @copyright   2023-2026 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -67,7 +67,7 @@ class provider implements
 
         foreach ($userids as $userid) {
             // Delete calendar events.
-            $DB->delete_records('event', ['modulename' => 'kanban', 'instance' => $kanban->id, 'userid' => $userid]);
+            $DB->delete_records('event', ['modulename' => 'kanban', 'instance' => $cm->instance, 'userid' => $userid]);
 
             $boardids = $DB->get_fieldset_select(
                 'kanban_board',
@@ -75,47 +75,50 @@ class provider implements
                 'kanban_instance = :instance',
                 ['instance' => $cm->instance]
             );
-            [$insql, $params] = $DB->get_in_or_equal($boardids);
 
-            // Delete history.
-            $params['userid'] = $userid;
-            $DB->delete_records_select('kanban_history', 'userid = :userid AND kanban_board ' . $insql, $params);
-            $DB->execute(
-                'UPDATE kanban_history SET affected_userid = 0 WHERE affected_userid = :userid AND kanban_board ' . $insql,
-                $params
-            );
+            if (!empty($boardids)) {
+                [$insql, $params] = $DB->get_in_or_equal($boardids, SQL_PARAMS_NAMED);
 
-            // Remove card author.
-            $DB->execute(
-                'UPDATE kanban_card SET createdby = 0 WHERE createdby = :userid AND kanban_board ' . $insql,
-                $params
-            );
-
-            $sql = 'SELECT id FROM {kanban_card} WHERE kanban_board ' . $insql;
-            $cardids = $DB->get_fieldset_sql($sql, $params);
-
-            if (!empty($cardids)) {
-                [$insql, $params] = $DB->get_in_or_equal($cardids);
-                $sql = 'userid = :userid AND kanban_card ' . $insql;
+                // Delete history.
                 $params['userid'] = $userid;
-                // Unassign user.
-                $DB->delete_records_select('kanban_assignee', $sql, $params);
-                // Delete discussion.
-                $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
+                $DB->delete_records_select('kanban_history', 'userid = :userid AND kanban_board ' . $insql, $params);
+                $DB->execute(
+                    'UPDATE {kanban_history} SET affected_userid = 0 WHERE affected_userid = :userid AND kanban_board ' . $insql,
+                    $params
+                );
+
+                // Remove card author.
+                $DB->execute(
+                    'UPDATE {kanban_card} SET createdby = 0 WHERE createdby = :userid AND kanban_board ' . $insql,
+                    $params
+                );
+
+                $sql = 'SELECT id FROM {kanban_card} WHERE kanban_board ' . $insql;
+                $cardids = $DB->get_fieldset_sql($sql, $params);
+
+                if (!empty($cardids)) {
+                    [$insql, $params] = $DB->get_in_or_equal($cardids, SQL_PARAMS_NAMED);
+                    $sql = 'userid = :userid AND kanban_card ' . $insql;
+                    $params['userid'] = $userid;
+                    // Unassign user.
+                    $DB->delete_records_select('kanban_assignee', $sql, $params);
+                    // Delete discussion.
+                    $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
+                }
             }
 
             // Get all personal boards.
             $boardid = $DB->get_field_select(
                 'kanban_board',
                 'id',
-                'kanban_instance = :instance AND userid = :user',
+                'kanban_instance = :instance AND userid = :userid',
                 ['instance' => $cm->instance, 'userid' => $userid]
             );
-            $cardids = $DB->get_fieldset_select('kanban_card', 'kanban_board = :board', ['board' => $boardid]);
+            $cardids = $DB->get_fieldset_select('kanban_card', 'id', 'kanban_board = :board', ['board' => $boardid]);
 
             if (!empty($cardids)) {
                 // Unassign all users from private board.
-                [$insql, $params] = $DB->get_in_or_equal($cardids);
+                [$insql, $params] = $DB->get_in_or_equal($cardids, SQL_PARAMS_NAMED);
                 $DB->delete_records_select('kanban_assignee', 'kanban_card ' . $insql, $params);
                 // Delete all discussions.
                 $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
@@ -124,7 +127,7 @@ class provider implements
             $DB->delete_records('kanban_card', ['kanban_board' => $boardid]);
             $DB->delete_records('kanban_column', ['kanban_board' => $boardid]);
             $DB->delete_records('kanban_board', ['id' => $boardid]);
-            $DB->delete_records('kanban_history', ['id' => $boardid]);
+            $DB->delete_records('kanban_history', ['kanban_board' => $boardid]);
         }
     }
 
@@ -223,7 +226,7 @@ class provider implements
         $contextlist = new contextlist();
 
         $params = [
-            'modname' => 'forum',
+            'modname' => 'kanban',
             'contextlevel' => CONTEXT_MODULE,
             'userid' => $userid,
         ];
@@ -265,77 +268,135 @@ class provider implements
             return;
         }
 
+        // Array to store all the data to be exported, this is needed to export the data sorted by course module.
+        // Structure of the array:
+        // $cms[cmid][boardid][columnid] =
+        // ['cards' => [cardid] => ['carddata' => ... , 'historydata' => ... , 'discussiondata' => ...]
+        // 'columndata' => ['columntitle']].
+        $cms = [];
+
         $user = $contextlist->get_user();
         $userid = $user->id;
 
         [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         // Get all cards the user is assigned to without private board of the user.
-        $sql = "SELECT cm.id AS cmid,
-                       co.title AS columntitle
-                       ca.title as cardtitle,
-                       ca.timemodified
+        $sql = "SELECT ca.id AS cardid,
+                       cm.id AS cmid,
+                       b.id AS boardid,
+                       ca.kanban_column AS columnid,
+                       co.title AS columntitle,
+                       ca.title AS cardtitle,
+                       ca.timemodified AS timemodified
                   FROM {context} c
             INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {kanban} k ON k.id = cm.instance
-            INNER JOIN {kanban_board} b ON b.kanban_instance = k.id AND b.userid != :userid
+            INNER JOIN {kanban_board} b ON b.kanban_instance = k.id AND b.userid = 0
             INNER JOIN {kanban_column} co ON co.kanban_board = b.id
             INNER JOIN {kanban_card} ca ON ca.kanban_column = co.id
             INNER JOIN {kanban_assignee} a ON a.kanban_card = ca.id
                  WHERE c.id {$contextsql} AND a.userid = :userid
               ORDER BY cm.id";
 
-        $params = ['modname' => 'kanban', 'contextlevel' => CONTEXT_MODULE, 'userid' => $userid] + $contextparams;
+        $params = [
+            'modname' => 'kanban',
+            'contextlevel' => CONTEXT_MODULE,
+            'userid' => $userid,
+        ] + $contextparams;
 
         $entries = $DB->get_records_sql($sql, $params);
-        self::export_kanban_data($entries, $user);
+        foreach ($entries as $entry) {
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid] = [
+                'carddata' => [
+                    'title' => $entry->cardtitle,
+                    'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
+                ],
+            ];
+        }
 
         // Get all cards the user has created without private board of the user.
-        $sql = "SELECT cm.id AS cmid,
-                       co.title AS columntitle
-                       ca.title as cardtitle,
-                       ca.timemodified
+        $sql = "SELECT ca.id AS cardid,
+                       cm.id AS cmid,
+                       b.id AS boardid,
+                       co.id AS columnid,
+                       co.title AS columntitle,
+                       ca.title AS cardtitle,
+                       ca.timemodified AS timemodified
                   FROM {context} c
             INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {kanban} k ON k.id = cm.instance
-            INNER JOIN {kanban_board} b ON b.kanban_instance = k.id AND b.userid != :userid
+            INNER JOIN {kanban_board} b ON b.kanban_instance = k.id AND b.userid = 0
             INNER JOIN {kanban_column} co ON co.kanban_board = b.id
             INNER JOIN {kanban_card} ca ON ca.kanban_column = co.id
-                 WHERE c.id {$contextsql} AND c.createdby = :userid
+                 WHERE c.id {$contextsql} AND ca.createdby = :userid
               ORDER BY cm.id";
 
-        $params = ['modname' => 'kanban', 'contextlevel' => CONTEXT_MODULE, 'userid' => $userid] + $contextparams;
+        $params = [
+            'modname' => 'kanban',
+            'contextlevel' => CONTEXT_MODULE,
+            'userid' => $userid,
+        ] + $contextparams;
 
         $entries = $DB->get_records_sql($sql, $params);
-        self::export_kanban_data($entries, $user);
+
+        foreach ($entries as $entry) {
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid][(int)$entry->cardid] = [
+                'carddata' => [
+                    'title' => $entry->cardtitle,
+                    'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
+                ],
+            ];
+        }
 
         // Get all history items the user is part of.
-
         $sql = "SELECT cm.id AS cmid,
-                       h.action AS columntitle
-                       ca.title AS cardtitle,
-                       h.timestamp
+                       b.id AS boardid,
+                       ca.kanban_column AS columnid,
+                       h.action AS historyaction,
+                       ca.id AS cardid,
+                       h.timestamp AS timemodified,
+                       h.userid AS historyuserid,
+                       h.affected_userid AS historyaffecteduserid
                   FROM {context} c
             INNER JOIN {course_modules} cm ON c.id {$contextsql} AND cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {kanban} k ON k.id = cm.instance
             INNER JOIN {kanban_board} b ON b.kanban_instance = k.id
-            INNER JOIN {kanban_history} h ON h.kanban_board = b.id AND (h.userid = :userid OR h.affected_userid = :userid
+            INNER JOIN {kanban_history} h ON h.kanban_board = b.id AND (h.userid = :userid OR h.affected_userid = :userid2)
+            INNER JOIN {kanban_card} ca ON ca.id = h.kanban_card
               ORDER BY h.timestamp";
 
-        $params = ['modname' => 'kanban', 'contextlevel' => CONTEXT_MODULE, 'userid' => $userid] + $contextparams;
+        $params = [
+            'modname' => 'kanban',
+            'contextlevel' => CONTEXT_MODULE,
+            'userid' => $userid,
+            'userid2' => $userid,
+        ] + $contextparams;
 
         $entries = $DB->get_records_sql($sql, $params);
-        self::export_kanban_data($entries, $user);
+
+        // Add history data to the corresponding card data. If the user is not the one who triggered the history
+        // action or the affected user, set the userid to 0 to avoid exporting other users' ids.
+        foreach ($entries as $entry) {
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid]['historydata'][] = [
+                'action' => $entry->historyaction,
+                'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
+                'userid' => $entry->historyuserid == $userid ? $entry->historyuserid : 0,
+                'affected_userid' => $entry->historyaffecteduserid == $userid ? $entry->historyaffecteduserid : 0,
+            ];
+        }
 
         // Get all discussion messages created by the user.
 
-        $sql = "SELECT cm.id AS cmid,
-                       d.action AS columntitle
-                       ca.title AS cardtitle,
-                       h.timestamp
+        $sql = "SELECT d.id AS discussionid,
+                       cm.id AS cmid,
+                       d.content AS content,
+                       ca.id AS cardid,
+                       ca.kanban_column AS columnid,
+                       b.id AS boardid,
+                       d.timecreated AS timemodified
                   FROM {context} c
             INNER JOIN {course_modules} cm ON c.id {$contextsql} AND cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
@@ -343,69 +404,77 @@ class provider implements
             INNER JOIN {kanban_board} b ON b.kanban_instance = k.id
             INNER JOIN {kanban_column} co ON co.kanban_board = b.id
             INNER JOIN {kanban_card} ca ON ca.kanban_column = co.id
-            INNER JOIN {kanban_discussion} d ON d.kanban_card = ca.id AND d.userid = :userid
+            INNER JOIN {kanban_discussion_comment} d ON d.kanban_card = ca.id AND d.userid = :userid
               ORDER BY d.timecreated";
 
         $params = ['modname' => 'kanban', 'contextlevel' => CONTEXT_MODULE, 'userid' => $userid] + $contextparams;
 
         $entries = $DB->get_records_sql($sql, $params);
-        self::export_kanban_data($entries, $user);
+
+        foreach ($entries as $entry) {
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid] = [
+                'discussiondata' => [
+                    'content' => $entry->content,
+                    'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
+                ],
+            ];
+        }
 
         // Get all data from personal boards.
-        $sql = "SELECT cm.id AS cmid,
-                       co.title AS columntitle
-                       ca.title as cardtitle,
-                       ca.timemodified
+        $sql = "SELECT DISTINCT ca.id AS cardid,
+                       cm.id AS cmid,
+                       ca.kanban_column AS columnid,
+                       b.id AS boardid,
+                       co.title AS columntitle,
+                       ca.title AS cardtitle,
+                       ca.timemodified AS timemodified,
+                       a.userid AS assigneeuserid
                   FROM {context} c
             INNER JOIN {course_modules} cm ON c.id {$contextsql} AND cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {kanban} k ON k.id = cm.instance
-            INNER JOIN {kanban_board} b ON b.kanban_instance = k.id AND k.userid = :userid
+            INNER JOIN {kanban_board} b ON b.kanban_instance = k.id AND b.userid = :userid
             INNER JOIN {kanban_column} co ON co.kanban_board = b.id
-             LEFT JOIN {kanban_card} ca ON ca.kanban_column = co.id
-             LEFT JOIN {kanban_assignee} a ON a.kanban_card = ca.id AND a.userid = :userid
+            INNER JOIN {kanban_card} ca ON ca.kanban_column = co.id
+             LEFT JOIN {kanban_assignee} a ON a.kanban_card = ca.id AND a.userid = :userid2
               ORDER BY cm.id";
 
-        $params = ['modname' => 'kanban', 'contextlevel' => CONTEXT_MODULE, 'userid' => $userid] + $contextparams;
+        $params = [
+            'modname' => 'kanban',
+            'contextlevel' => CONTEXT_MODULE,
+            'userid' => $userid,
+            'userid2' => $userid,
+        ] + $contextparams;
 
         $entries = $DB->get_records_sql($sql, $params);
-        self::export_kanban_data($entries, $user);
+        foreach ($entries as $entry) {
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid] = [
+                'carddata' => [
+                    'title' => $entry->cardtitle,
+                    'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
+                    'assignee' => $entry->assigneeuserid ?? 0,
+                ],
+            ];
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['columndata'] = [
+                'columntitle' => $entry->columntitle,
+            ];
+        }
+
+        self::export_kanban_data($cms, $user);
     }
 
     /**
      * Write kanban data.
      *
-     * @param array $entries
+     * @param array $cms The data to be exported sorted by course module id.
      * @param stdClass $user
      * @return void
      */
-    public static function export_kanban_data(array $entries, stdClass $user): void {
-        $lastcmid = null;
-
-        foreach ($entries as $entry) {
-            if ($lastcmid != $entry->cmid) {
-                if (!empty($data)) {
-                    $context = \context_module::instance($lastcmid);
-                    $contextdata = helper::get_context_data($context, $user);
-                    $contextdata = (object) array_merge((array) $contextdata, $data);
-                    writer::with_context($context)->export_data([], $contextdata);
-                    helper::export_context_files($context, $user);
-                }
-                $data = [
-                    'columntitle' => [],
-                    'cardtitle' => [],
-                    'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
-                ];
-            }
-            $data['columntitle'][] = $entry->columntitle;
-            $data['cardtitle'][] = $entry->cardtitle;
-            $lastcmid = $entry->cmid;
-        }
-
-        if (!empty($data)) {
-            $context = \context_module::instance($lastcmid);
+    public static function export_kanban_data(array $cms, stdClass $user): void {
+        foreach ($cms as $cmid => $boards) {
+            $context = \context_module::instance($cmid);
             $contextdata = helper::get_context_data($context, $user);
-            $contextdata = (object) array_merge((array) $contextdata, $data);
+            $contextdata = (object) array_merge((array) $contextdata, ['boards' => $boards]);
             writer::with_context($context)->export_data([], $contextdata);
             helper::export_context_files($context, $user);
         }
@@ -429,12 +498,12 @@ class provider implements
 
         $boardids = $DB->get_fieldset_select('kanban_board', 'id', 'kanban_instance = :instance', ['instance' => $cm->instance]);
         if (!empty($boardids)) {
-            [$insql, $params] = $DB->get_in_or_equal($boardids);
+            [$insql, $params] = $DB->get_in_or_equal($boardids, SQL_PARAMS_NAMED);
             $sql = 'SELECT id FROM {kanban_card} WHERE kanban_board ' . $insql;
             $cardids = $DB->get_fieldset_sql($sql, $params);
 
             // Delete all assignees (this needs to be done also for template boards).
-            [$insql, $params] = $DB->get_in_or_equal($cardids);
+            [$insql, $params] = $DB->get_in_or_equal($cardids, SQL_PARAMS_NAMED);
             $DB->delete_records_select('kanban_assignee', 'kanban_card ' . $insql, $params);
 
             // Delete discussion.
@@ -447,7 +516,7 @@ class provider implements
                 'kanban_instance = :instance AND template = 0',
                 ['instance' => $cm->instance]
             );
-            [$insql, $params] = $DB->get_in_or_equal($boardids);
+            [$insql, $params] = $DB->get_in_or_equal($boardids, SQL_PARAMS_NAMED);
             $DB->delete_records_select('kanban_column', 'kanban_board ' . $insql, $params);
 
             // Delete history.
@@ -475,7 +544,7 @@ class provider implements
             }
 
             // Delete calendar events.
-            $DB->delete_records('event', ['modulename' => 'kanban', 'instance' => $kanban->id, 'userid' => $userid]);
+            $DB->delete_records('event', ['modulename' => 'kanban', 'instance' => $cm->instance, 'userid' => $userid]);
 
             $boardids = $DB->get_fieldset_select(
                 'kanban_board',
@@ -483,47 +552,49 @@ class provider implements
                 'kanban_instance = :instance',
                 ['instance' => $cm->instance]
             );
-            [$insql, $params] = $DB->get_in_or_equal($boardids);
+            if (!empty($boardids)) {
+                [$insql, $params] = $DB->get_in_or_equal($boardids, SQL_PARAMS_NAMED);
 
-            // Delete history.
-            $params['userid'] = $userid;
-            $DB->delete_records_select('kanban_history', 'userid = :userid AND kanban_board ' . $insql, $params);
-            $DB->execute(
-                'UPDATE kanban_history SET affected_userid = 0 WHERE affected_userid = :userid AND kanban_board ' . $insql,
-                $params
-            );
-
-            // Remove card author.
-            $DB->execute(
-                'UPDATE kanban_card SET createdby = 0 WHERE createdby = :userid AND kanban_board ' . $insql,
-                $params
-            );
-
-            $sql = 'SELECT id FROM {kanban_card} WHERE kanban_board ' . $insql;
-            $cardids = $DB->get_fieldset_sql($sql, $params);
-
-            if (!empty($cardids)) {
-                [$insql, $params] = $DB->get_in_or_equal($cardids);
-                $sql = 'userid = :userid AND kanban_card ' . $insql;
+                // Delete history.
                 $params['userid'] = $userid;
-                // Unassign user.
-                $DB->delete_records_select('kanban_assignee', $sql, $params);
-                // Delete discussion.
-                $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
+                $DB->delete_records_select('kanban_history', 'userid = :userid AND kanban_board ' . $insql, $params);
+                $DB->execute(
+                    'UPDATE {kanban_history} SET affected_userid = 0 WHERE affected_userid = :userid AND kanban_board ' . $insql,
+                    $params
+                );
+
+                // Remove card author.
+                $DB->execute(
+                    'UPDATE {kanban_card} SET createdby = 0 WHERE createdby = :userid AND kanban_board ' . $insql,
+                    $params
+                );
+
+                $sql = 'SELECT id FROM {kanban_card} WHERE kanban_board ' . $insql;
+                $cardids = $DB->get_fieldset_sql($sql, $params);
+
+                if (!empty($cardids)) {
+                    [$insql, $params] = $DB->get_in_or_equal($cardids, SQL_PARAMS_NAMED);
+                    // Delete discussion.
+                    $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
+                    $sql = 'userid = :userid AND kanban_card ' . $insql;
+                    $params['userid'] = $userid;
+                    // Unassign user.
+                    $DB->delete_records_select('kanban_assignee', $sql, $params);
+                }
             }
 
             // Get all personal boards.
             $boardid = $DB->get_field_select(
                 'kanban_board',
                 'id',
-                'kanban_instance = :instance AND userid = :user',
+                'kanban_instance = :instance AND userid = :userid',
                 ['instance' => $cm->instance, 'userid' => $userid]
             );
-            $cardids = $DB->get_fieldset_select('kanban_card', 'kanban_board = :board', ['board' => $boardid]);
+            $cardids = $DB->get_fieldset_select('kanban_card', 'id', 'kanban_board = :board', ['board' => $boardid]);
 
             if (!empty($cardids)) {
                 // Unassign all users from private board.
-                [$insql, $params] = $DB->get_in_or_equal($cardids);
+                [$insql, $params] = $DB->get_in_or_equal($cardids, SQL_PARAMS_NAMED);
                 $DB->delete_records_select('kanban_assignee', 'kanban_card ' . $insql, $params);
                 // Delete all discussions.
                 $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
@@ -532,7 +603,7 @@ class provider implements
             $DB->delete_records('kanban_card', ['kanban_board' => $boardid]);
             $DB->delete_records('kanban_column', ['kanban_board' => $boardid]);
             $DB->delete_records('kanban_board', ['id' => $boardid]);
-            $DB->delete_records('kanban_history', ['id' => $boardid]);
+            $DB->delete_records('kanban_history', ['kanban_board' => $boardid]);
         }
     }
 
