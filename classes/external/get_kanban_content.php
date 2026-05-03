@@ -411,7 +411,7 @@ class get_kanban_content extends external_api {
                     true,
                     $kanban->userboards == constants::MOD_KANBAN_USERBOARDS_ONLY
                 );
-                $groupselector = preg_replace('/<?noscript>/i', '', $groupselector);
+                $groupselector = preg_replace('/<\/?noscript>/i', '', $groupselector);
                 $allowedgroups = groups_get_activity_allowed_groups($cminfo);
                 if (!$allowedgroups) {
                     if ($kanban->userboards !== constants::MOD_KANBAN_NOUSERBOARDS) {
