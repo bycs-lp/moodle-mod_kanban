@@ -393,6 +393,9 @@ class get_kanban_content extends external_api {
         $kanban = $DB->get_record('kanban', ['id' => $cminfo->instance]);
 
         $kanbanboard = helper::get_cached_board($boardid);
+
+        helper::check_permissions_for_user_or_group($kanbanboard, $context, $cminfo, constants::MOD_KANBAN_VIEW);
+
         $groupid = $kanbanboard->groupid;
 
         $kanbanboard->heading = get_string('courseboard', 'mod_kanban');
@@ -668,7 +671,7 @@ class get_kanban_content extends external_api {
      */
     public static function get_discussion_update(int $cmid, int $boardid, int $cardid, int $timestamp = 0): array {
         global $DB, $USER;
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
         require_capability('mod/kanban:view', $context);
@@ -677,6 +680,7 @@ class get_kanban_content extends external_api {
         $kanbanboard = $boardmanager->get_board();
 
         helper::check_permissions_for_user_or_group($kanbanboard, $context, $cminfo, constants::MOD_KANBAN_VIEW);
+        helper::check_card_consistency($cardid, $boardid);
 
         $sql = 'kanban_card = :cardid AND timecreated > :timestamp';
         $params['cardid'] = $cardid;
@@ -742,18 +746,19 @@ class get_kanban_content extends external_api {
      */
     public static function get_history_update(int $cmid, int $boardid, int $cardid, int $timestamp = 0): array {
         global $DB;
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
         require_capability('mod/kanban:viewhistory', $context);
 
         $formatter = new updateformatter();
         $kanban = $DB->get_record('kanban', ['id' => $cminfo->instance]);
+        $kanbanboard = helper::get_cached_board($boardid);
+
+        helper::check_permissions_for_user_or_group($kanbanboard, $context, $cminfo, constants::MOD_KANBAN_VIEW);
+        helper::check_card_consistency($cardid, $boardid);
+
         if (!empty($kanban->history) && !empty(get_config('mod_kanban', 'enablehistory'))) {
-            $kanbanboard = helper::get_cached_board($boardid);
-
-            helper::check_permissions_for_user_or_group($kanbanboard, $context, $cminfo, constants::MOD_KANBAN_VIEW);
-
             $sql = 'kanban_card = :id AND timestamp > :time';
             $params = ['id' => $cardid, 'time' => $timestamp];
             $historyitems = $DB->get_records_select('kanban_history', $sql, $params);
