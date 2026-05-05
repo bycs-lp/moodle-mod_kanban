@@ -34,6 +34,16 @@ final class boardmanager_test extends \advanced_testcase {
     private $kanban;
     /** @var array The users used for testing */
     private $users;
+    /** @var \stdClass The other course used for testing */
+    private $othercourse;
+    /** @var \stdClass The kanban in the same course used for testing */
+    private $kanbansamecourse;
+    /** @var int The boardid of the kanban in the same course used for testing */
+    private $kanbansamecourseboardid;
+    /** @var \stdClass The kanban in the other course used for testing */
+    private $kanbanothercourse;
+    /** @var int The boardid of the kanban in the other course used for testing */
+    private $kanbanothercourseboardid;
 
     /**
      * Prepare testing environment
@@ -45,7 +55,14 @@ final class boardmanager_test extends \advanced_testcase {
 
         $this->resetAfterTest();
         $this->course = $this->getDataGenerator()->create_course();
+        $this->othercourse = $this->getDataGenerator()->create_course();
         $this->kanban = $this->getDataGenerator()->create_module('kanban', ['course' => $this->course]);
+        $this->kanbansamecourse = $this->getDataGenerator()->create_module('kanban', ['course' => $this->course]);
+        $this->kanbanothercourse = $this->getDataGenerator()->create_module('kanban', ['course' => $this->othercourse]);
+        $boardmanager = new boardmanager($this->kanbansamecourse->cmid);
+        $this->kanbansamecourseboardid = $boardmanager->create_board();
+        $boardmanager = new boardmanager($this->kanbanothercourse->cmid);
+        $this->kanbanothercourseboardid = $boardmanager->create_board();
 
         for ($i = 0; $i < 3; $i++) {
             $this->users[$i] = $this->getDataGenerator()->create_user(
@@ -106,6 +123,12 @@ final class boardmanager_test extends \advanced_testcase {
         $boardmanager->delete_board($boardid);
         $this->assertEquals($boardcount, $DB->count_records('kanban_board', ['kanban_instance' => $this->kanban->id]));
         $this->assertEquals(0, $DB->count_records('kanban_column', ['kanban_board' => $boardid]));
+
+        $this->expectException(\moodle_exception::class);
+        $boardmanager->delete_board($this->kanbansamecourseboardid);
+
+        $this->expectException(\moodle_exception::class);
+        $boardmanager->delete_board($this->kanbanothercourseboardid);
     }
 
     /**
@@ -413,5 +436,25 @@ final class boardmanager_test extends \advanced_testcase {
                 'expected' => '{"test":"<b>good html<\/b>"}',
             ],
         ];
+    }
+
+    /**
+     * Test for boardmanager consistency regarding the kanban board and instance.
+     */
+    public function test_boardmanager_consistency_samecourse(): void {
+        $this->resetAfterTest();
+
+        $this->expectException(\moodle_exception::class);
+        new boardmanager($this->kanban->cmid, $this->kanbansamecourseboardid);
+    }
+
+    /**
+     * Test for boardmanager consistency regarding the kanban board and instance.
+     */
+    public function test_boardmanager_consistency_othercourse(): void {
+        $this->resetAfterTest();
+
+        $this->expectException(\moodle_exception::class);
+        new boardmanager($this->kanban->cmid, $this->kanbanothercourseboardid);
     }
 }

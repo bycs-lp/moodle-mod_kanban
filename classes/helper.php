@@ -18,7 +18,7 @@
  * Helper class
  *
  * @package    mod_kanban
- * @copyright   2023-2026 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ use stdClass;
  * Helper class
  *
  * @package    mod_kanban
- * @copyright   2023-2026 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -137,7 +137,9 @@ class helper {
     }
 
     /**
-     * This function checks permissions if a board is a user or a group board.
+     * This function checks whether the current user is allowed to access the
+     * given board based on the board's user and group settings and the user's permissions.
+     * It also checks whether the board actually belongs to the given course module.
      *
      * @param object $board The record from the board table
      * @param \context $context The context of the course module
@@ -151,6 +153,7 @@ class helper {
         int $type = constants::MOD_KANBAN_EDIT
     ): void {
         global $USER;
+        self::check_consistency_by_object($board, $cminfo);
         if (!empty($board->template)) {
             require_capability('mod/kanban:manageboard', $context);
         }
@@ -481,5 +484,71 @@ class helper {
         $columnsindatabase = array_intersect($sequence, $columnids);
         $updatedboardsequence = array_merge($columnsindatabase, $columnsmissinginsequence);
         return implode(',', $updatedboardsequence);
+    }
+
+    /**
+     * Checks whether the board actually belongs to the given course module.
+     * @param object $board The board to be checked.
+     * @param \cm_info $cminfo The cm_info object of the course module that is used.
+     * @throws \moodle_exception
+     */
+    public static function check_consistency_by_object(object $board, \cm_info $cminfo) {
+        if ($board->kanban_instance != $cminfo->instance) {
+            throw new \moodle_exception('invalidboard', 'mod_kanban');
+        }
+    }
+
+    /**
+     * Checks whether the board actually belongs to the given course module.
+     * @param int $boardid The id of the board to be checked.
+     * @param int $cmid The id of the course module that is used.
+     * @throws \moodle_exception
+     */
+    public static function check_consistency(int $boardid, int $cmid) {
+        global $DB;
+        $board = $DB->get_record('kanban_board', ['id' => $boardid], '*', MUST_EXIST);
+        $context = \core\context\module::instance($cmid);
+        $cminfo = get_fast_modinfo($context->instanceid)->get_cm($cmid);
+        self::check_consistency_by_object($board, $cminfo);
+    }
+
+    /**
+     * Checks whether the given card actually belongs to the given course module.
+     * @param int $cardid The id of the card to be checked.
+     * @param int $boardid The id of the board that is used.
+     * @throws \moodle_exception
+     */
+    public static function check_card_consistency(int $cardid, int $boardid) {
+        global $DB;
+        $DB->get_record('kanban_card', ['id' => $cardid, 'kanban_board' => $boardid], '*', MUST_EXIST);
+    }
+
+    /**
+     * Checks whether the given column actually belongs to the given course module.
+     * @param int $columnid The id of the column to be checked.
+     * @param int $boardid The id of the board that is used.
+     * @throws \moodle_exception
+     */
+    public static function check_column_consistency(int $columnid, int $boardid) {
+        global $DB;
+        $DB->get_record('kanban_column', ['id' => $columnid, 'kanban_board' => $boardid], '*', MUST_EXIST);
+    }
+
+    /**
+     * Checks whether the given comment actually belongs to the given course module.
+     * @param int $commentid The id of the comment to be checked.
+     * @param int $boardid The id of the board that is used.
+     * @throws \moodle_exception
+     */
+    public static function check_comment_consistency(int $commentid, int $boardid) {
+        global $DB;
+        $DB->get_record_sql(
+            "SELECT *
+             FROM {kanban_discussion_comment} c
+             JOIN {kanban_card} k ON c.kanban_card = k.id
+             WHERE c.id = :id AND k.kanban_board = :boardid",
+            ['id' => $commentid, 'boardid' => $boardid],
+            MUST_EXIST
+        );
     }
 }
