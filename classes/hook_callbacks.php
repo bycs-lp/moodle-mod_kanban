@@ -39,11 +39,11 @@ class hook_callbacks {
 
         $params = ['userid' => $userid, 'courseid' => $courseid, 'ueid' => $ueid];
         $sql = "SELECT COUNT(ue.id)
-                FROM {user_enrolments} ue
-                JOIN {enrol} e ON e.id = ue.enrolid
-                WHERE e.courseid = :courseid
-                    AND ue.userid = :userid
-                    AND ue.id <> :ueid";
+                  FROM {user_enrolments} ue
+                  JOIN {enrol} e ON e.id = ue.enrolid
+                 WHERE e.courseid = :courseid
+                       AND ue.userid = :userid
+                       AND ue.id <> :ueid";
 
         $lastenrol = $DB->count_records_sql($sql, $params);
 
@@ -53,12 +53,12 @@ class hook_callbacks {
 
         $cardparams = ['userid' => $userid, 'courseid' => $courseid];
         $sql = "SELECT c.id AS cardid, b.id AS boardid
-                FROM {kanban_assignee} a
-                JOIN {kanban_card} c ON c.id = a.kanban_card
-                JOIN {kanban_board} b ON b.id = c.kanban_board
-                JOIN {kanban} k ON k.id = b.kanban_instance
-                WHERE k.course = :courseid
-                AND a.userid = :userid";
+                  FROM {kanban_assignee} a
+                  JOIN {kanban_card} c ON c.id = a.kanban_card
+                  JOIN {kanban_board} b ON b.id = c.kanban_board
+                  JOIN {kanban} k ON k.id = b.kanban_instance
+                 WHERE k.course = :courseid
+                       AND a.userid = :userid";
         $assignments = $DB->get_records_sql($sql, $cardparams);
 
         if (empty($assignments)) {
