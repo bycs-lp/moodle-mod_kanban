@@ -108,11 +108,12 @@ final class hook_callbacks_test extends \advanced_testcase {
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
 
         $selfplugin = enrol_get_plugin('self');
-        $selfplugin->add_instance($this->course, [
+        $instanceid = $selfplugin->add_instance($this->course, [
             'status' => ENROL_INSTANCE_ENABLED,
             'roleid' => $studentrole->id,
         ]);
-        $this->getDataGenerator()->enrol_user($this->users[0]->id, $this->course->id, $studentrole->id, 'self');
+        $selfinstance = $DB->get_record('enrol', ['id' => $instanceid]);
+        $selfplugin->enrol_user($selfinstance, $this->users[0]->id, $studentrole->id);
 
         $cardid = $this->boardmanager->add_card($this->columnids[0]);
         $this->boardmanager->assign_user($cardid, $this->users[0]->id);
