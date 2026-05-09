@@ -158,7 +158,8 @@ final class hook_callbacks_test extends \advanced_testcase {
 
         $this->boardmanager->assign_user($card1, $this->users[1]->id);
 
-        $this->assertEquals(2,
+        $this->assertEquals(
+            2,
             $DB->count_records('kanban_assignee', ['userid' => $this->users[0]->id])
         );
 
@@ -166,7 +167,8 @@ final class hook_callbacks_test extends \advanced_testcase {
         $instance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'manual']);
         $manplugin->unenrol_user($instance, $this->users[0]->id);
 
-        $this->assertEquals(0,
+        $this->assertEquals(
+            0,
             $DB->count_records('kanban_assignee', ['userid' => $this->users[0]->id])
         );
 
