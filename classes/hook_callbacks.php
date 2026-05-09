@@ -30,7 +30,7 @@ class hook_callbacks {
      *
      * @param \core_enrol\hook\before_user_enrolment_removed $hook the user_unenrolment hook object
      */
-    public static function handle_user_unenrolment(\core_enrol\hook\before_user_enrolment_removed $hook) {
+    public static function handle_user_unenrolment(\core_enrol\hook\before_user_enrolment_removed $hook): void {
         global $DB;
 
         $userid = $hook->get_userid();
