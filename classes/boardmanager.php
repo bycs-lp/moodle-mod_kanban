@@ -1204,10 +1204,10 @@ class boardmanager {
     public function push_card_copy(int $cardid, array $boardids = []): void {
         global $DB;
         $allboardids = $DB->get_fieldset_select('kanban_board', 'id', 'kanban_instance = :id', ['id' => $this->kanban->id]);
-        if (empty($boards)) {
+        if (empty($boardids)) {
             $boardids = $allboardids;
         } else {
-            $boardids = array_intersect($boards, $allboardids);
+            $boardids = array_intersect($boardids, $allboardids);
         }
         $card = $this->get_card($cardid);
         $originalboard = $card->kanban_board;
