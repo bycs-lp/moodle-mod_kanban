@@ -53,7 +53,8 @@ class reminder extends \core\task\scheduled_task {
         $time = time();
         $kanbancards = $DB->get_records_sql(
             'SELECT ' . $DB->sql_concat('c.id', "'-'", 'a.userid') . ' as uniqid,
-                    c.id as id, c.title as title, k.name as boardname, c.duedate as duedate, a.userid as userid, k.id as instance
+                    c.id as id, c.title as title, c.kanban_board as kanban_board, k.name as boardname,
+                    c.duedate as duedate, a.userid as userid, k.id as instance
                FROM {kanban_card} c
          INNER JOIN {kanban_assignee} a ON a.kanban_card = c.id
                 AND c.duedate != 0
@@ -69,6 +70,7 @@ class reminder extends \core\task\scheduled_task {
             $user = \core_user::get_user($kanbancard->userid);
             helper::fix_current_language($user->lang);
             $kanbancard->duedate = userdate($kanbancard->duedate, get_string('strftimedate', 'langconfig'));
+            $kanbancard->cardid = $kanbancard->id;
             helper::send_notification($cminfo, 'due', [$kanbancard->userid], $kanbancard, null, true);
             $data = new \stdClass();
             $data->id = $kanbancard->id;
