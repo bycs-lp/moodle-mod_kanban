@@ -59,7 +59,7 @@ export default class {
             hastemplate: state.common.template != 0,
             istemplate: state.board.template != 0,
             heading: state.board.heading,
-            groupselector: state.common.groupselector,
+            groupselector: this.exportGroupselector(state),
             userboards: state.common.userboards,
             history: state.common.history && state.capabilities.get(capabilities.VIEWHISTORY).value,
             groupmode: state.common.groupmode,
@@ -68,11 +68,29 @@ export default class {
             showactionmenu: showactionmenu,
             userboardsonly: state.common.userboards == 2,
             iscourseboard: state.board.userid == 0 && state.board.groupid == 0 && state.board.template == 0,
-            users: JSON.parse(JSON.stringify(state.users)),
+            users: this.exportUsers(state),
             usenumbers: state.common.usenumbers,
             hasaddcards: state.board.hasaddcards ?? false,
             showauthors: state.board.showauthors ?? false,
         }, this.exportCapabilities(state));
+    }
+
+    /**
+     * Exports the group selector.
+     * @param {*} state
+     * @returns
+     */
+    static exportGroupselector(state) {
+        return state.common.groupselector;
+    }
+
+    /**
+     * Exports the users.
+     * @param {*} state
+     * @returns {object}
+     */
+    static exportUsers(state) {
+        return JSON.parse(JSON.stringify(state.users));
     }
 
     /**
