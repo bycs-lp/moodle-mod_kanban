@@ -129,8 +129,16 @@ if (empty($boardid)) {
 
 $boards = [];
 if (!empty($allboards)) {
-    $boards = $DB->get_fieldset('kanban_board', 'id', ['kanban_instance' => $kanban->id, 'template' => 0]);
-    $url = new moodle_url('/mod/kanban/view.php', ['id' => $id]);
+    $boards = $DB->get_fieldset_sql(
+        "SELECT b.id
+           FROM {kanban_board} b
+      LEFT JOIN {user} u on u.id = b.userid
+      LEFT JOIN {groups} g on g.id = b.groupid
+          WHERE b.kanban_instance = ? AND b.template = 0
+       ORDER BY u.lastname ASC, u.firstname ASC, g.name ASC",
+        [$kanban->id]
+    );
+    $url = new moodle_url('/mod/kanban/view.php', ['id' => $id, 'boardid' => $boardid]);
     echo $OUTPUT->notification(get_string('viewingallboardsnotice', 'mod_kanban', $url->out()), 'info');
 } else {
     $boards = [$boardid];
