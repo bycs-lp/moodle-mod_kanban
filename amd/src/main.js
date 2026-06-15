@@ -13,7 +13,7 @@ const stateChangedEventName = 'mod_kanban:stateChanged';
  */
 export const init = (domElementId, cmId, boardId) => {
     const reactiveInstance = new Reactive({
-        name: 'kanban_' + cmId,
+        name: 'kanban_' + cmId + '_' + boardId,
         eventName: stateChangedEventName,
         eventDispatch: dispatchKanbanEvent,
         target: document.getElementById(domElementId),
