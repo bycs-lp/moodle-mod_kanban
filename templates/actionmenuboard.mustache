@@ -32,6 +32,7 @@
         "ismyuserboard": false,
         "viewallboards": true,
         "groupselector": "",
+        "allboards": true,
         "users": [
             {"id": 1, "fullname": "Berti Beispiel"}
         ]
@@ -85,7 +86,7 @@
     </li>
     {{^allboards}}
     <li class="nav-item mod_kanban_view_all_boards">
-        <button type="button" tabindex="0" class="dropdown-item" data-action="show_allboards" href="view.php?id={{cmid}}&allboards=1">{{#pix}} a/view_list_active, core, {{#str}} viewallboards, mod_kanban {{/str}} {{/pix}}{{#str}} viewallboards, mod_kanban {{/str}}</button>
+        <a class="dropdown-item" data-action="show_allboards" href="view.php?id={{cmid}}&boardid={{id}}&allboards=1">{{#pix}} a/view_list_active, core, {{#str}} viewallboards, mod_kanban {{/str}} {{/pix}}{{#str}} viewallboards, mod_kanban {{/str}}</a>
     </li>
     {{/allboards}}
     {{/viewallboards}}
