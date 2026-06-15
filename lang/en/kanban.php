@@ -232,6 +232,8 @@ $string['userboards'] = 'Personal boards';
 $string['userboards_help'] = 'Enables personal boards for the participants (only visible to them and to the trainers)';
 $string['userboardsenabled'] = 'Personal boards enabled';
 $string['userboardsonly'] = 'Personal boards only';
+$string['viewallboards'] = 'View all boards';
+$string['viewingallboardsnotice'] = 'You are currently viewing all shared / personal / group boards of this activity. Moving cards / columns is only possible within the same board.<br/><a href="{$a}">Back to the single board view</a>';
 $string['wiplimit'] = 'WIP limit per person';
 $string['wiplimitenable'] = 'Enable WIP limit';
 $string['wiplimitgreatercollimit'] = 'WIP limit cannot be greater than column limit.';
