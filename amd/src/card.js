@@ -28,7 +28,6 @@ import {exception as displayException, saveCancel} from 'core/notification';
 import ModalForm from 'core_form/modalform';
 import Modal from 'core/modal';
 import * as Str from 'core/str';
-import {get_string as getString} from 'core/str';
 import Templates from 'core/templates';
 import KanbanComponent from 'mod_kanban/kanbancomponent';
 import Log from 'core/log';
@@ -419,7 +418,7 @@ export default class extends KanbanComponent {
         }
 
         let data = exporter.exportCard(this.reactive.state, id);
-        let title = getString(
+        let title = Str.get_string(
             'historyfor',
             'mod_kanban',
             this.reactive.state.common.usenumbers ? '#' + data.number + ' ' + data.title : data.title
@@ -735,7 +734,7 @@ export default class extends KanbanComponent {
                 groupid: this.groupid,
                 userid: this.userid
             },
-            modalConfig: {title: getString('editcard', 'mod_kanban')},
+            modalConfig: {title: Str.get_string('editcard', 'mod_kanban')},
             returnFocus: this.getElement(),
         });
         this.addEventListener(modalForm, modalForm.events.FORM_SUBMITTED, this._updateCard);

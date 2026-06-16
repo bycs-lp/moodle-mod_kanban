@@ -4,7 +4,6 @@ import capabilities from 'mod_kanban/capabilities';
 import exporter from 'mod_kanban/exporter';
 import {saveCancel} from 'core/notification';
 import * as Str from 'core/str';
-import {get_string as getString} from 'core/str';
 import ModalForm from 'core_form/modalform';
 import KanbanComponent from 'mod_kanban/kanbancomponent';
 import Log from "core/log";
@@ -372,7 +371,7 @@ export default class extends KanbanComponent {
                 boardid: this.boardid,
                 cmid: this.cmid
             },
-            modalConfig: {title: getString('editcolumn', 'mod_kanban')},
+            modalConfig: {title: Str.get_string('editcolumn', 'mod_kanban')},
             returnFocus: this.getElement(),
         });
         this.addEventListener(modalForm, modalForm.events.FORM_SUBMITTED, this._updateColumn);
