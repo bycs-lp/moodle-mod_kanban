@@ -42,6 +42,7 @@ export default {
     COMPLETE: `[data-action="complete_card"]`,
     COMPLETIONSTATE: `.mod_kanban_card_completion`,
     CONTAINER: `.mod_kanban_render_container`,
+    COPYCARDLINK: `[data-action="copy_card_link"]`,
     DELETEBOARD: `[data-action="delete_board"]`,
     DELETECARD: `[data-action="delete_card"]`,
     DELETECOLUMN: `[data-action="delete_column"]`,

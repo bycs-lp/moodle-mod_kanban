@@ -34,6 +34,16 @@ final class boardmanager_test extends \advanced_testcase {
     private $kanban;
     /** @var array The users used for testing */
     private $users;
+    /** @var \stdClass The other course used for testing */
+    private $othercourse;
+    /** @var \stdClass The kanban in the same course used for testing */
+    private $kanbansamecourse;
+    /** @var int The boardid of the kanban in the same course used for testing */
+    private $kanbansamecourseboardid;
+    /** @var \stdClass The kanban in the other course used for testing */
+    private $kanbanothercourse;
+    /** @var int The boardid of the kanban in the other course used for testing */
+    private $kanbanothercourseboardid;
 
     /**
      * Prepare testing environment
@@ -45,7 +55,14 @@ final class boardmanager_test extends \advanced_testcase {
 
         $this->resetAfterTest();
         $this->course = $this->getDataGenerator()->create_course();
+        $this->othercourse = $this->getDataGenerator()->create_course();
         $this->kanban = $this->getDataGenerator()->create_module('kanban', ['course' => $this->course]);
+        $this->kanbansamecourse = $this->getDataGenerator()->create_module('kanban', ['course' => $this->course]);
+        $this->kanbanothercourse = $this->getDataGenerator()->create_module('kanban', ['course' => $this->othercourse]);
+        $boardmanager = new boardmanager($this->kanbansamecourse->cmid);
+        $this->kanbansamecourseboardid = $boardmanager->create_board();
+        $boardmanager = new boardmanager($this->kanbanothercourse->cmid);
+        $this->kanbanothercourseboardid = $boardmanager->create_board();
 
         for ($i = 0; $i < 3; $i++) {
             $this->users[$i] = $this->getDataGenerator()->create_user(
@@ -106,6 +123,12 @@ final class boardmanager_test extends \advanced_testcase {
         $boardmanager->delete_board($boardid);
         $this->assertEquals($boardcount, $DB->count_records('kanban_board', ['kanban_instance' => $this->kanban->id]));
         $this->assertEquals(0, $DB->count_records('kanban_column', ['kanban_board' => $boardid]));
+
+        $this->expectException(\moodle_exception::class);
+        $boardmanager->delete_board($this->kanbansamecourseboardid);
+
+        $this->expectException(\moodle_exception::class);
+        $boardmanager->delete_board($this->kanbanothercourseboardid);
     }
 
     /**
@@ -413,5 +436,59 @@ final class boardmanager_test extends \advanced_testcase {
                 'expected' => '{"test":"<b>good html<\/b>"}',
             ],
         ];
+    }
+
+    /**
+     * Test for boardmanager consistency regarding the kanban board and instance.
+     */
+    public function test_boardmanager_consistency_samecourse(): void {
+        $this->resetAfterTest();
+
+        $this->expectException(\moodle_exception::class);
+        new boardmanager($this->kanban->cmid, $this->kanbansamecourseboardid);
+    }
+
+    /**
+     * Test for boardmanager consistency regarding the kanban board and instance.
+     */
+    public function test_boardmanager_consistency_othercourse(): void {
+        $this->resetAfterTest();
+
+        $this->expectException(\moodle_exception::class);
+        new boardmanager($this->kanban->cmid, $this->kanbanothercourseboardid);
+    }
+
+    /**
+     * Test for copying a card to all other boards of the activity.
+     */
+    public function test_push_card_copy(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $this->kanban = $this->getDataGenerator()->create_module('kanban', ['course' => $this->course, 'userboards' => 1]);
+        $boardmanager = new boardmanager($this->kanban->cmid);
+        $mainboardid = $boardmanager->create_board();
+        $personalboardid1 = $boardmanager->create_board_from_template(0, ['userid' => $this->users[0]->id]);
+        $personalboardid2 = $boardmanager->create_board_from_template(0, ['userid' => $this->users[1]->id]);
+
+        $boardmanager->load_board($mainboardid);
+        $columnid = $DB->get_field('kanban_column', 'id', ['kanban_board' => $mainboardid], IGNORE_MULTIPLE);
+        $cardid = $boardmanager->add_card($columnid, 0, ['title' => 'Testcard']);
+        $boardmanager->push_card_copy($cardid);
+
+        // There should be one card with the same title on each board now.
+        $this->assertEquals(1, $DB->count_records('kanban_card', ['title' => 'Testcard', 'kanban_board' => $mainboardid]));
+        $this->assertEquals(1, $DB->count_records('kanban_card', ['title' => 'Testcard', 'kanban_board' => $personalboardid1]));
+        $this->assertEquals(1, $DB->count_records('kanban_card', ['title' => 'Testcard', 'kanban_board' => $personalboardid2]));
+
+        $cardid2 = $boardmanager->add_card($columnid, 0, ['title' => 'Testcard2']);
+        $boardmanager->push_card_copy($cardid2, [$personalboardid1]);
+
+        // There should be a new card with the same title on the first personal board but not on the second one.
+        $this->assertEquals(1, $DB->count_records('kanban_card', ['title' => 'Testcard2', 'kanban_board' => $mainboardid]));
+        $this->assertEquals(1, $DB->count_records('kanban_card', ['title' => 'Testcard2', 'kanban_board' => $personalboardid1]));
+        $this->assertEquals(0, $DB->count_records('kanban_card', ['title' => 'Testcard2', 'kanban_board' => $personalboardid2]));
     }
 }

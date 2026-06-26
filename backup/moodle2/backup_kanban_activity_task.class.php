@@ -51,8 +51,12 @@ class backup_kanban_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot . '/mod/kanban', '#');
 
+        $pattern = "#(" . $base . "\/view.php\?id=([0-9]+)\&(amp;)cardid\=)([0-9]+)#";
+        $content = preg_replace($pattern, '$@KANBANVIEWCARDID*$2*$4@$', $content);
+
         $pattern = "#(" . $base . "\/view.php\?id\=)([0-9]+)#";
         $content = preg_replace($pattern, '$@KANBANVIEWBYID*$2@$', $content);
+
         return $content;
     }
 }

@@ -25,17 +25,13 @@
 
 namespace mod_kanban\external;
 
-// Compatibility with Moodle < 4.2.
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/lib/externallib.php');
-
 use coding_exception;
 use context_module;
-use external_api;
-use external_function_parameters;
-use external_single_structure;
-use external_value;
-use invalid_parameter_exception;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_value;
+use core_external\invalid_parameter_exception;
 use mod_kanban\boardmanager;
 use mod_kanban\helper;
 use moodle_exception;
@@ -45,7 +41,7 @@ use restricted_context_exception;
 /**
  * Class for modifying kanban content.
  *
- * @copyright   2023-2026 ISB Bayern
+ * @copyright  2023-2026 ISB Bayern
  * @author     Stefan Hanauska
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -187,6 +183,7 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_column_consistency($columnid, $boardid);
         $boardmanager->add_card($columnid, $aftercard, $data);
 
         return [
@@ -251,6 +248,7 @@ class change_kanban_content extends external_api {
         $boardmanager = new boardmanager($cmid, $boardid);
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_column_consistency($columnid, $boardid);
 
         $boardmanager->move_column($columnid, $aftercol);
 
@@ -319,6 +317,9 @@ class change_kanban_content extends external_api {
         }
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_column_consistency($columnid, $boardid);
+        helper::check_card_consistency($cardid, $boardid);
+
         $boardmanager->move_card($cardid, $aftercard, $columnid);
 
         return [
@@ -384,6 +385,8 @@ class change_kanban_content extends external_api {
         }
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
+
         $boardmanager->delete_card($cardid);
 
         return [
@@ -444,6 +447,8 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_column_consistency($columnid, $boardid);
+
         $boardmanager->delete_column($columnid);
 
         return [
@@ -500,7 +505,7 @@ class change_kanban_content extends external_api {
         $boardid = $params['boardid'];
         $cardid = $params['data']['cardid'];
         $userid = $params['data']['userid'];
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
         if (empty($userid)) {
@@ -512,6 +517,8 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
+
         $boardmanager->assign_user($cardid, $userid);
 
         return [
@@ -571,7 +578,7 @@ class change_kanban_content extends external_api {
         if (empty($userid)) {
             $userid = $USER->id;
         }
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
         if ($userid == $USER->id) {
@@ -582,6 +589,8 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
+
         $boardmanager->unassign_user($cardid, $userid);
 
         return [
@@ -628,7 +637,6 @@ class change_kanban_content extends external_api {
      * @throws moodle_exception
      */
     public static function set_card_complete(int $cmid, int $boardid, array $data): array {
-        global $USER;
         $params = self::validate_parameters(self::set_card_complete_parameters(), [
             'cmid' => $cmid,
             'boardid' => $boardid,
@@ -638,7 +646,7 @@ class change_kanban_content extends external_api {
         $boardid = $params['boardid'];
         $state = $params['data']['state'];
         $cardid = $params['data']['cardid'];
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
         $boardmanager = new boardmanager($cmid, $boardid);
@@ -648,6 +656,7 @@ class change_kanban_content extends external_api {
         }
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
 
         $boardmanager->set_card_complete($cardid, $state);
 
@@ -704,7 +713,7 @@ class change_kanban_content extends external_api {
         $boardid = $params['boardid'];
         $state = $params['data']['state'];
         $columnid = $params['data']['columnid'];
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
 
@@ -713,6 +722,7 @@ class change_kanban_content extends external_api {
         $boardmanager = new boardmanager($cmid, $boardid);
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_column_consistency($columnid, $boardid);
 
         $boardmanager->set_column_locked($columnid, $state);
 
@@ -768,7 +778,7 @@ class change_kanban_content extends external_api {
         $boardid = $params['boardid'];
         $state = $params['data']['state'];
 
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
 
@@ -776,6 +786,7 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+
         $boardmanager->set_board_columns_locked($state);
 
         return [
@@ -841,6 +852,8 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
+
         $boardmanager->add_discussion_message($cardid, $message);
 
         return [
@@ -896,7 +909,7 @@ class change_kanban_content extends external_api {
         $boardid = $params['boardid'];
         $messageid = $params['data']['messageid'];
 
-        [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
+        [, $cminfo] = get_course_and_cm_from_cmid($cmid);
         $context = context_module::instance($cmid);
         self::validate_context($context);
 
@@ -904,6 +917,8 @@ class change_kanban_content extends external_api {
 
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_comment_consistency($messageid, $boardid);
+
         $message = $boardmanager->get_discussion_message($messageid);
 
         if ($message->userid != $USER->id) {
@@ -1087,6 +1102,7 @@ class change_kanban_content extends external_api {
         $boardmanager = new boardmanager($cmid, $boardid);
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
 
         $boardmanager->push_card_copy($cardid);
 
@@ -1136,6 +1152,7 @@ class change_kanban_content extends external_api {
         $boardmanager = new boardmanager($cmid, $boardid);
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_card_consistency($cardid, $boardid);
 
         $boardmanager->duplicate_card($cardid);
 
