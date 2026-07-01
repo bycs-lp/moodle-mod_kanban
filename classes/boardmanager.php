@@ -663,6 +663,7 @@ class boardmanager {
                 $data['username'] = fullname($USER);
                 $data['boardname'] = $this->kanban->name;
                 $data['columnname'] = clean_param($targetcolumn->title, PARAM_TEXT);
+                $data['cardid'] = $cardid;
                 $assignees = $this->get_card_assignees($cardid);
                 helper::send_notification($this->cminfo, 'moved', $assignees, (object) $data);
                 if (!empty($options->autoclose) && $card->completed == 0) {
@@ -879,6 +880,7 @@ class boardmanager {
         }
         $card->username = fullname($USER);
         $card->boardname = $this->kanban->name;
+        $card->cardid = $cardid;
         helper::send_notification($this->cminfo, 'closed', $assignees, $card, ($state == 0 ? 'reopened' : null));
         $this->update_completion($assignees);
         $this->write_history(
@@ -1064,7 +1066,13 @@ class boardmanager {
                 $sql = 'kanban_card = :cardid AND userid ' . $sql;
                 $params['cardid'] = $cardid;
                 $DB->delete_records_select('kanban_assignee', $sql, $params);
-                helper::send_notification($this->cminfo, 'assigned', $todelete, (object) $carddata, 'unassigned');
+                helper::send_notification(
+                    $this->cminfo,
+                    'assigned',
+                    $todelete,
+                    (object) array_merge($carddata, ['cardid' => $cardid]),
+                    'unassigned'
+                );
                 foreach ($todelete as $user) {
                     $this->write_history(
                         'unassigned',
@@ -1102,7 +1110,7 @@ class boardmanager {
                 $this->cminfo,
                 'assigned',
                 $toinsert,
-                (object) array_merge($carddata, ['boardname' => $this->cminfo->name])
+                (object) array_merge($carddata, ['boardname' => $this->cminfo->name, 'cardid' => $cardid])
             );
             if (!empty($card['completed'])) {
                 $this->update_completion($toinsert);

@@ -210,7 +210,7 @@ class helper {
     /**
      * Send a notification to a user.
      *
-     * @param cm_info $cm The affected course module
+     * @param \cm_info $cm The affected course module
      * @param string $messagename The name of the message defined in message.php
      * @param array $users The users to send the notification to
      * @param object $data The data to describe the message details
@@ -235,13 +235,24 @@ class helper {
         $message->userfrom = \core_user::get_noreply_user();
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $templatename = 'mod_kanban/message_' . $messagename;
+        $data->messagename = $messagename;
 
         $message->notification = 1;
         $url = $cm->get_url();
         if (!empty($data->boardid)) {
             $url->param('boardid', $data->boardid);
+        } else if (!empty($data->kanban_board)) {
+            $url->param('boardid', $data->kanban_board);
         }
         $message->contexturl = $url->out(false);
+        $data->boardlink = $message->contexturl;
+        if (!empty($data->cardid)) {
+            $url->param('cardid', $data->cardid);
+            $data->cardlink = $url->out(false);
+        } else if (!empty($data->kanban_card)) {
+            $url->param('cardid', $data->kanban_card);
+            $data->cardlink = $url->out(false);
+        }
 
         foreach ($users as $user) {
             $user = \core_user::get_user($user);
@@ -250,8 +261,15 @@ class helper {
             $message->fullmessage = get_string('message_' . $messagename . '_fullmessage', 'mod_kanban', $data);
             $message->smallmessage = $message->subject;
             $message->contexturlname = get_string('toboard', 'mod_kanban', $data);
-            if (file_exists(__DIR__ . '/../templates/' . $templatename)) {
+            $data->subject = $message->subject;
+            $data->fullmessage = $message->fullmessage;
+            $data->courselink = course_get_format($cm->get_course())->get_view_url(null)->out(false);
+            $data->coursename = $cm->get_course()->fullname;
+            // See, if there is a specific template for this message. If not, use the generic one.
+            if (file_exists(__DIR__ . '/../templates/' . $templatename . '.mustache')) {
                 $message->fullmessagehtml = $OUTPUT->render_from_template($templatename, $data);
+            } else {
+                $message->fullmessagehtml = $OUTPUT->render_from_template('mod_kanban/message', $data);
             }
 
             // Don't notify current user about own actions.
