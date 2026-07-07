@@ -1,0 +1,45 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_kanban/message
+
+    Generic notification message template.
+
+    Example context (json):
+    {
+        "messagename": "moved",
+        "boardid": 1,
+        "cardid": 2,
+        "boardname": "Test Board",
+        "fullmessage": "The card 'Test Card' has been moved to column 'In Progress'.",
+        "boardlink": "http://moodle/mod/kanban/view.php?id=123&boardid=1",
+        "cardlink": "http://moodle/mod/kanban/view.php?id=123&boardid=1&cardid=2"
+    }
+}}
+<p>
+    <a href="{{courselink}}" target="_blank" rel="noopener noreferrer">{{coursename}}</a> &raquo;
+    <a href="{{boardlink}}" target="_blank" rel="noopener noreferrer">{{boardname}}</a>
+</p>
+<div class="kanban-message">
+    <div class="kanban-message-fullmessage">{{{fullmessage}}}</div>
+    <div class="kanban-message-links">
+        <p>
+            <a href="{{boardlink}}" target="_blank" rel="noopener noreferrer">{{#str}} toboard, mod_kanban {{/str}}</a><br>
+            <a href="{{cardlink}}" target="_blank" rel="noopener noreferrer">{{#str}} tocard, mod_kanban {{/str}}</a>
+        </p>
+    </div>
+</div>
