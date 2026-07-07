@@ -132,8 +132,9 @@ $string['message_assigned_smallmessage'] = 'Card "{$a->title}" was assigned to y
 $string['message_closed_fullmessage'] = 'Card "{$a->title}" was closed by {$a->username}';
 $string['message_closed_smallmessage'] = 'Card "{$a->title}" was closed';
 $string['message_discussion_fullmessage'] = 'There is a new message in discussion for card "{$a->title}" in board "{$a->boardname}":
-{$a->username}
-{$a->content}';
+
+Author: {$a->username}
+Message: {$a->content}';
 $string['message_discussion_smallmessage'] = 'Card "{$a->title}" was discussed';
 $string['message_due_fullmessage'] = 'Card "{$a->title}" in board "{$a->boardname}" is due at {$a->duedate}';
 $string['message_due_smallmessage'] = 'Card "{$a->title}" is due';

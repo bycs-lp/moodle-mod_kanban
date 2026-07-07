@@ -262,7 +262,8 @@ class helper {
             $message->smallmessage = $message->subject;
             $message->contexturlname = get_string('toboard', 'mod_kanban', $data);
             $data->subject = $message->subject;
-            $data->fullmessage = $message->fullmessage;
+            $data->fullmessage = clean_text($message->fullmessage);
+            $data->fullmessage = nl2br($data->fullmessage);
             $data->courselink = course_get_format($cm->get_course())->get_view_url(null)->out(false);
             $data->coursename = $cm->get_course()->fullname;
             // See, if there is a specific template for this message. If not, use the generic one.
