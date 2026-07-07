@@ -432,8 +432,8 @@ export default class extends KanbanComponent {
         modal.modal[0].dataset.id = id;
 
         let us = modal.modal[0].querySelector('form');
-            if (us) {
-                us.addEventListener('change', (e) => {
+        if (us) {
+            us.addEventListener('change', (e) => {
                 e.target.closest('form').submit();
             });
         }
