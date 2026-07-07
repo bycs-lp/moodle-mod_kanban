@@ -69,7 +69,7 @@ class reminder extends \core\task\scheduled_task {
             [$course, $cminfo] = get_course_and_cm_from_instance($kanbancard->instance, 'kanban');
             $user = \core_user::get_user($kanbancard->userid);
             helper::fix_current_language($user->lang);
-            $kanbancard->duedate = userdate($kanbancard->duedate, get_string('strftimedate', 'langconfig'));
+            $kanbancard->duedate = userdate($kanbancard->duedate, get_string('strftimedatetime', 'langconfig'));
             $kanbancard->cardid = $kanbancard->id;
             helper::send_notification($cminfo, 'due', [$kanbancard->userid], $kanbancard, null, true);
             $data = new \stdClass();
