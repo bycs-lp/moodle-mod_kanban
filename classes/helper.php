@@ -234,7 +234,7 @@ class helper {
         }
         $message->userfrom = \core_user::get_noreply_user();
         $message->fullmessageformat = FORMAT_MARKDOWN;
-        $templatename = 'mod_kanban/message_' . $messagename;
+        $templatename = 'message_' . $messagename;
         $data->messagename = $messagename;
 
         $message->notification = 1;
@@ -267,7 +267,7 @@ class helper {
             $data->coursename = $cm->get_course()->fullname;
             // See, if there is a specific template for this message. If not, use the generic one.
             if (file_exists(__DIR__ . '/../templates/' . $templatename . '.mustache')) {
-                $message->fullmessagehtml = $OUTPUT->render_from_template($templatename, $data);
+                $message->fullmessagehtml = $OUTPUT->render_from_template('mod_kanban/' . $templatename, $data);
             } else {
                 $message->fullmessagehtml = $OUTPUT->render_from_template('mod_kanban/message', $data);
             }
