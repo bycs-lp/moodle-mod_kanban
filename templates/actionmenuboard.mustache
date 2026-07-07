@@ -69,7 +69,7 @@
     {{#groupmode}}
     {{#groupselector}}
     <li class="nav-item mod_kanban_select_group">
-        <a class="dropdown-item" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_change_group" data-target="#mod_kanban_change_group">{{#pix}} i/group, core, {{#str}} changegroup, mod_kanban {{/str}} {{/pix}}{{#str}} changegroup, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-action="show_other_group_board">{{#pix}} i/group, core, {{#str}} changegroup, mod_kanban {{/str}} {{/pix}}{{#str}} changegroup, mod_kanban {{/str}}</a>
     </li>
     {{/groupselector}}
     {{/groupmode}}
@@ -81,65 +81,9 @@
     {{/ismyuserboard}}
     {{#viewallboards}}
     <li class="nav-item mod_kanban_select_user">
-        <a class="dropdown-item" data-bs-toggle="modal" data-toggle="modal" data-bs-target="#mod_kanban_change_user" data-target="#mod_kanban_change_user">{{#pix}} t/user, core, {{#str}} changeuser, mod_kanban {{/str}} {{/pix}}{{#str}} changeuser, mod_kanban {{/str}}</a>
+        <a class="dropdown-item" data-action="show_other_personal_board">{{#pix}} t/user, core, {{#str}} changeuser, mod_kanban {{/str}} {{/pix}}{{#str}} changeuser, mod_kanban {{/str}}</a>
     </li>
     {{/viewallboards}}
     {{/userboards}}
 </ul>
 {{/showactionmenu}}
-{{#groupselector}}
-<div class="modal fade" id="mod_kanban_change_group" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{#str}} changegroup, mod_kanban {{/str}}</h5>
-                <button type="button" class="btn-close close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="{{#str}} close, core {{/str}}">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                {{{groupselector}}}
-            </div>
-        </div>
-    </div>
-</div>
-{{/groupselector}}
-{{#userboards}}
-    {{#viewallboards}}
-    <div class="modal fade" id="mod_kanban_change_user" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{#str}} changeuser, mod_kanban {{/str}}</h5>
-                    <button type="button" class="btn-close close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="{{#str}} close, core {{/str}}">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    {{>mod_kanban/singleuserselect}}
-                </div>
-            </div>
-        </div>
-    </div>
-    {{/viewallboards}}
-{{/userboards}}
-{{#js}}
-{{#groupselector}}
-let gs = document.querySelector('#mod_kanban_change_group form');
-if (gs) {
-    gs.addEventListener('change', (e) => {
-        e.target.closest('form').submit();
-    });
-}
-{{/groupselector}}
-{{#userboards}}
-    {{#viewallboards}}
-let us = document.querySelector('#mod_kanban_change_user form');
-if (us) {
-    us.addEventListener('change', (e) => {
-        e.target.closest('form').submit();
-    });
-}
-    {{/viewallboards}}
-{{/userboards}}
-{{/js}}

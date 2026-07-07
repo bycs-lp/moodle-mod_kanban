@@ -21,6 +21,8 @@ import KanbanComponent from 'mod_kanban/kanbancomponent';
 import Log from 'core/log';
 import {saveCancel} from 'core/notification';
 import * as Str from 'core/str';
+import Modal from 'core/modal';
+import Templates from 'core/templates';
 
 /**
  * Component representing a kanban board.
@@ -103,6 +105,20 @@ export default class extends KanbanComponent {
                 this.getElement(selectors.DELETEBOARD),
                 'click',
                 this._deleteConfirm
+            );
+        }
+        if (state.common.userboards > 0 && state.capabilities.get(capabilities.VIEWALLBOARDS).value) {
+            this.addEventListener(
+                this.getElement(selectors.SHOWOTHERPERSONALBOARD),
+                'click',
+                this._showUserselectModal
+            );
+        }
+        if (state.common.groupmode) {
+            this.addEventListener(
+                this.getElement(selectors.SHOWOTHERGROUPBOARD),
+                'click',
+                this._showGroupselectModal
             );
         }
         this.addEventListener(
@@ -386,6 +402,62 @@ export default class extends KanbanComponent {
             this.getElement(selectors.SCROLLRIGHT).style.setProperty('visibility', 'visible');
         } else {
             this.getElement(selectors.SCROLLRIGHT).style.setProperty('visibility', 'hidden');
+        }
+    }
+
+    /**
+     * Show modal to select another personal board.
+     * @param {*} event Click event.
+     */
+    async _showUserselectModal(event) {
+        let id = this.id;
+        if (event.target.dataset.id !== undefined) {
+            id = event.target.dataset.id;
+        }
+
+        let data = {
+            users: exporter.exportUsers(this.reactive.state),
+            cmid: this.reactive.state.common.id,
+        };
+
+        let body = await Templates.renderForPromise('mod_kanban/singleuserselect', data);
+
+        const modal = await Modal.create({
+            body: body.html,
+            bodyJS: body.js,
+            title: Str.get_string('changeuser', 'mod_kanban'),
+            removeOnClose: true,
+            show: true,
+        });
+        modal.modal[0].dataset.id = id;
+
+        let us = modal.modal[0].querySelector('form');
+        if (us) {
+            us.addEventListener('change', (e) => {
+                e.target.closest('form').submit();
+            });
+        }
+    }
+
+    /**
+     * Show modal to select another group board.
+     */
+    async _showGroupselectModal() {
+        let id = this.id;
+
+        const modal = await Modal.create({
+            title: Str.get_string('changegroup', 'mod_kanban'),
+            removeOnClose: true,
+            show: true,
+            body: exporter.exportGroupselector(this.reactive.state),
+        });
+        modal.modal[0].dataset.id = id;
+
+        let gs = modal.modal[0].querySelector('form');
+        if (gs) {
+            gs.addEventListener('change', (e) => {
+                e.target.closest('form').submit();
+            });
         }
     }
 }
