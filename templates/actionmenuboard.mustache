@@ -32,44 +32,45 @@
         "ismyuserboard": false,
         "viewallboards": true,
         "groupselector": "",
+        "allboards": true,
         "users": [
             {"id": 1, "fullname": "Berti Beispiel"}
         ]
     }
 }}
 {{#showactionmenu}}
-<button class="mod_kanban_action_menu_trigger btn btn-icon icon-no-margin p-0 dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">{{#pix}} i/menu, core, {{#str}} editboard, mod_kanban {{/str}} {{/pix}}</button>
+<button type="button" tabindex="0" class="mod_kanban_action_menu_trigger btn btn-icon icon-no-margin p-0 dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">{{#pix}} i/menu, core, {{#str}} editboard, mod_kanban {{/str}} {{/pix}}</button>
 <ul class="dropdown-menu dropdown-menu-left">
     {{#manageboard}}
     <li class="nav-item mod_kanban_lock_board_columns">
-        <a class="dropdown-item" data-action="lock_board_columns" data-id="{{id}}">{{#pix}} t/lock, core, {{#str}} lockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} lockboardcolumns, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item" data-action="lock_board_columns" data-id="{{id}}">{{#pix}} t/lock, core, {{#str}} lockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} lockboardcolumns, mod_kanban {{/str}}</button>
     </li>
     <li class="nav-item mod_kanban_unlock_board_columns">
-        <a class="dropdown-item" data-action="unlock_board_columns" data-id="{{id}}">{{#pix}} t/unlock, core, {{#str}} unlockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} unlockboardcolumns, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item" data-action="unlock_board_columns" data-id="{{id}}">{{#pix}} t/unlock, core, {{#str}} unlockboardcolumns, mod_kanban {{/str}} {{/pix}}{{#str}} unlockboardcolumns, mod_kanban {{/str}}</button>
     </li>
     <li class="nav-item mod_kanban_export_board">
         <a class="dropdown-item" data-action="export_board" data-id="{{id}}" href="{{config.wwwroot}}/mod/kanban/export.php?boardid={{id}}" target="_blank">{{#pix}} t/download, core, {{#str}} exportboard, mod_kanban {{/str}} {{/pix}}{{#str}} exportboard, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_create_template">
-        <a class="dropdown-item" data-action="create_template" data-id="{{id}}">{{#pix}} t/clipboard, core, {{#str}} createtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} createtemplate, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item" data-action="create_template" data-id="{{id}}">{{#pix}} t/clipboard, core, {{#str}} createtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} createtemplate, mod_kanban {{/str}}</button>
     </li>
     <li class="nav-item mod_kanban_show_template">
-        <a class="dropdown-item" data-action="show_template" data-id="{{id}}">{{#pix}} i/publish, core, {{#str}} showtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} showtemplate, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item" data-action="show_template" data-id="{{id}}">{{#pix}} i/publish, core, {{#str}} showtemplate, mod_kanban {{/str}} {{/pix}}{{#str}} showtemplate, mod_kanban {{/str}}</button>
     </li>
     <li class="nav-item mod_kanban_delete_template">
-        <a class="dropdown-item text-danger" data-action="delete_template" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deletetemplate, mod_kanban {{/str}} {{/pix}}{{#str}} deletetemplate, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item text-danger" data-action="delete_template" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deletetemplate, mod_kanban {{/str}} {{/pix}}{{#str}} deletetemplate, mod_kanban {{/str}}</button>
     </li>
     {{/manageboard}}
     <li class="nav-item mod_kanban_show_board">
         <a class="dropdown-item" href="view.php?id={{cmid}}&group=0&user=0">{{#pix}} t/left, core, {{#str}} showboard, mod_kanban {{/str}} {{/pix}}{{#str}} showboard, mod_kanban {{/str}}</a>
     </li>
     <li class="nav-item mod_kanban_delete_board">
-        <a class="dropdown-item text-danger" data-action="delete_board" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deleteboard, mod_kanban {{/str}} {{/pix}}{{#str}} deleteboard, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item text-danger" data-action="delete_board" data-id="{{id}}">{{#pix}} t/delete, core, {{#str}} deleteboard, mod_kanban {{/str}} {{/pix}}{{#str}} deleteboard, mod_kanban {{/str}}</button>
     </li>
     {{#groupmode}}
     {{#groupselector}}
     <li class="nav-item mod_kanban_select_group">
-        <a class="dropdown-item" data-action="show_other_group_board">{{#pix}} i/group, core, {{#str}} changegroup, mod_kanban {{/str}} {{/pix}}{{#str}} changegroup, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item" data-action="show_other_group_board">{{#pix}} i/group, core, {{#str}} changegroup, mod_kanban {{/str}} {{/pix}}{{#str}} changegroup, mod_kanban {{/str}}</button>
     </li>
     {{/groupselector}}
     {{/groupmode}}
@@ -81,8 +82,13 @@
     {{/ismyuserboard}}
     {{#viewallboards}}
     <li class="nav-item mod_kanban_select_user">
-        <a class="dropdown-item" data-action="show_other_personal_board">{{#pix}} t/user, core, {{#str}} changeuser, mod_kanban {{/str}} {{/pix}}{{#str}} changeuser, mod_kanban {{/str}}</a>
+        <button type="button" tabindex="0" class="dropdown-item" data-action="show_other_personal_board">{{#pix}} t/user, core, {{#str}} changeuser, mod_kanban {{/str}} {{/pix}}{{#str}} changeuser, mod_kanban {{/str}}</button>
     </li>
+    {{^allboards}}
+    <li class="nav-item mod_kanban_view_all_boards">
+        <a class="dropdown-item" data-action="show_allboards" href="view.php?id={{cmid}}&boardid={{id}}&allboards=1">{{#pix}} a/view_list_active, core, {{#str}} viewallboards, mod_kanban {{/str}} {{/pix}}{{#str}} viewallboards, mod_kanban {{/str}}</a>
+    </li>
+    {{/allboards}}
     {{/viewallboards}}
     {{/userboards}}
 </ul>
