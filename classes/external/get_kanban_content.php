@@ -268,7 +268,7 @@ class get_kanban_content extends external_api {
                                 'timecreated' => new external_value(PARAM_INT, 'timecreated'),
                                 'userid' => new external_value(PARAM_INT, 'userid'),
                                 'kanban_card' => new external_value(PARAM_INT, 'card id'),
-                                'content' => new external_value(PARAM_TEXT, 'discussion message'),
+                                'content' => new external_value(PARAM_RAW, 'discussion message'),
                                 'username' => new external_value(PARAM_TEXT, 'user name'),
                                 'candelete' => new external_value(PARAM_BOOL, 'whether the current user can delete this message'),
                             ],
@@ -284,7 +284,7 @@ class get_kanban_content extends external_api {
                                 'userid' => new external_value(PARAM_INT, 'userid'),
                                 'kanban_card' => new external_value(PARAM_INT, 'card id'),
                                 'kanban_column' => new external_value(PARAM_INT, 'column'),
-                                'content' => new external_value(PARAM_TEXT, 'discussion message'),
+                                'content' => new external_value(PARAM_TEXT, 'history content'),
                                 'affectedusername' => new external_value(PARAM_TEXT, 'user name'),
                             ],
                             '',
@@ -694,7 +694,8 @@ class get_kanban_content extends external_api {
 
         $formatter = new updateformatter();
         foreach ($discussions as $discussion) {
-            $discussion->content = format_text($discussion->content, FORMAT_HTML);
+            $discussion->content = format_text($discussion->content, FORMAT_HTML, ['para' => false, 'context' => $context]);
+            $discussion->content = nl2br($discussion->content);
             $discussion->candelete = $discussion->userid == $USER->id || has_capability('mod/kanban:manageboard', $context);
             $discussion->username = fullname(\core_user::get_user($discussion->userid));
             if (!empty($boardmanager->get_instance()->usenumbers) && !empty($boardmanager->get_instance()->linknumbers)) {
