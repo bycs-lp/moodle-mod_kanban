@@ -105,6 +105,7 @@ class edit_column_form extends dynamic_form {
         $kanbanboard = helper::get_cached_board($boardid);
         $id = $this->optional_param('id', null, PARAM_INT);
         require_capability('mod/kanban:managecolumns', $context);
+        helper::check_column_consistency($id, $boardid);
         $modinfo = get_fast_modinfo($COURSE);
         $cm = $modinfo->get_cm($cmid);
         \mod_kanban\helper::check_permissions_for_user_or_group($kanbanboard, $context, $cm);
@@ -127,6 +128,7 @@ class edit_column_form extends dynamic_form {
         $boardmanager = new boardmanager($cmid, $boardid);
 
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
+        helper::check_column_consistency($formdata->id, $boardid);
 
         $boardmanager->update_column($formdata->id, (array) $formdata);
 
