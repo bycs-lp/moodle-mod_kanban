@@ -596,6 +596,13 @@ class get_kanban_content extends external_api {
             $caps[] = ['id' => $k, 'value' => $v];
         }
 
+        $userlist = $kanbanusers;
+        if (!has_capability('mod/kanban:viewallboards', $context)) {
+            $userlist = array_filter($kanbanusers, function ($user) use ($kanbanuserids) {
+                return in_array($user['id'], $kanbanuserids);
+            });
+        }
+
         if ($asupdate) {
             $formatter = new updateformatter();
             $formatter->put('common', (array) $common);
@@ -625,7 +632,7 @@ class get_kanban_content extends external_api {
             'board' => $kanbanboard,
             'columns' => $kanbancolumns,
             'cards' => $kanbancards,
-            'users' => $kanbanusers,
+            'users' => $userlist,
             'capabilities' => $caps,
             'discussions' => [],
             'history' => [],
