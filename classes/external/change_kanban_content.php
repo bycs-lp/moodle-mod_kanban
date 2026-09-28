@@ -173,7 +173,7 @@ class change_kanban_content extends external_api {
         $data = [];
         if (!empty($params['data']['title'])) {
             // Additional cleaning most likely not needed, because title is PARAM_TEXT, but let's be extra sure.
-            $data['title'] = clean_param($params['data']['title'], PARAM_TEXT);
+            $data['title'] = s(clean_param($params['data']['title'], PARAM_TEXT));
         }
         $aftercard = $params['data']['aftercard'];
         [$course, $cminfo] = get_course_and_cm_from_cmid($cmid);
