@@ -159,5 +159,25 @@ function xmldb_kanban_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026022001, 'kanban');
     }
 
+    if ($oldversion < 2026052501) {
+        // On sites upgraded via 2025020301 these fields were created differently than in install.xml,
+        // which check_database_schema.php reports as deviations. Reconcile them here.
+
+        // Field usenumbers on table kanban was added as NULL, but install.xml defines it as NOT NULL.
+        $table = new xmldb_table('kanban');
+        $field = new xmldb_field('usenumbers', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'history');
+        $dbman->change_field_notnull($table, $field);
+
+        // Field number on table kanban_card was added as NULL with default 0, but install.xml defines it
+        // as NOT NULL without default.
+        $table = new xmldb_table('kanban_card');
+        $field = new xmldb_field('number', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'timemodified');
+        $dbman->change_field_notnull($table, $field);
+        $dbman->change_field_default($table, $field);
+
+        // Kanban savepoint reached.
+        upgrade_mod_savepoint(true, 2026052501, 'kanban');
+    }
+
     return true;
 }
