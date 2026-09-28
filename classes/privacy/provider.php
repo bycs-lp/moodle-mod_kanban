@@ -103,7 +103,7 @@ class provider implements
                     // Unassign user.
                     $DB->delete_records_select('kanban_assignee', $sql, $params);
                     // Delete discussion.
-                    $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
+                    $DB->delete_records_select('kanban_discussion_comment', $sql, $params);
                 }
             }
 
@@ -574,10 +574,10 @@ class provider implements
 
                 if (!empty($cardids)) {
                     [$insql, $params] = $DB->get_in_or_equal($cardids, SQL_PARAMS_NAMED);
-                    // Delete discussion.
-                    $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
                     $sql = 'userid = :userid AND kanban_card ' . $insql;
                     $params['userid'] = $userid;
+                    // Delete discussion.
+                    $DB->delete_records_select('kanban_discussion_comment', $sql, $params);
                     // Unassign user.
                     $DB->delete_records_select('kanban_assignee', $sql, $params);
                 }
