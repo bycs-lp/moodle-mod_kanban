@@ -518,6 +518,9 @@ class change_kanban_content extends external_api {
         $boardmanager = new boardmanager($cmid, $boardid);
         helper::check_permissions_for_user_or_group($boardmanager->get_board(), $context, $cminfo);
         helper::check_card_consistency($cardid, $boardid);
+        if (!is_enrolled($context, $userid)) {
+            throw new moodle_exception('invaliduserid');
+        }
 
         $boardmanager->assign_user($cardid, $userid);
 
