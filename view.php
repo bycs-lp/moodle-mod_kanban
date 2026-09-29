@@ -34,16 +34,35 @@ $id = required_param('id', PARAM_INT);
 $boardid = optional_param('boardid', 0, PARAM_INT);
 $userid = optional_param('user', 0, PARAM_INT);
 $cardid = optional_param('cardid', 0, PARAM_INT);
+$allboards = optional_param('allboards', 0, PARAM_BOOL);
 
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'kanban');
 
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/kanban:view', $context);
+if (!empty($allboards)) {
+    require_capability('mod/kanban:viewallboards', $context);
+}
 
 $kanban = $DB->get_record('kanban', ['id' => $cm->instance], '*', MUST_EXIST);
 
-$PAGE->set_url(new moodle_url('/mod/kanban/view.php', ['id' => $id]));
+$pageurl = new moodle_url('/mod/kanban/view.php', ['id' => $id]);
+
+if (!empty($boardid)) {
+    $pageurl->param('boardid', $boardid);
+}
+if (!empty($userid)) {
+    $pageurl->param('user', $userid);
+}
+if (!empty($cardid)) {
+    $pageurl->param('cardid', $cardid);
+}
+if (!empty($allboards)) {
+    $pageurl->param('allboards', 1);
+}
+
+$PAGE->set_url($pageurl);
 $PAGE->set_title(get_string('pluginname', 'mod_kanban') . ' ' . $kanban->name);
 $PAGE->set_heading($kanban->name);
 
@@ -108,15 +127,39 @@ if (empty($boardid)) {
     helper::check_permissions_for_user_or_group($board, $context, $cm, constants::MOD_KANBAN_VIEW);
 }
 
-echo $OUTPUT->render_from_template(
-    'mod_kanban/container',
-    [
-        'cmid' => $cm->id,
-        'id' => $boardid,
-        'cardid' => $cardid,
-    ]
-);
+$boards = [];
+if (!empty($allboards)) {
+    $boards = $DB->get_fieldset_sql(
+        "SELECT b.id
+           FROM {kanban_board} b
+      LEFT JOIN {user} u on u.id = b.userid
+      LEFT JOIN {groups} g on g.id = b.groupid
+          WHERE b.kanban_instance = ? AND b.template = 0
+       ORDER BY u.lastname ASC, u.firstname ASC, g.name ASC",
+        [$kanban->id]
+    );
+    $url = new moodle_url('/mod/kanban/view.php', ['id' => $id, 'boardid' => $boardid]);
+    echo $OUTPUT->notification(get_string('viewingallboardsnotice', 'mod_kanban', $url->out()), 'info');
+} else {
+    $boards = [$boardid];
+}
 
-$PAGE->requires->js_call_amd('mod_kanban/main', 'init', ['mod_kanban_render_container-' . $cm->id, $cm->id, $boardid]);
+foreach ($boards as $bid) {
+    echo $OUTPUT->render_from_template(
+        'mod_kanban/container',
+        [
+            'cmid' => $cm->id,
+            'id' => $bid,
+            'cardid' => ($boardid == $bid ? $cardid : 0),
+            'allboards' => !empty($allboards),
+        ]
+    );
+
+    $PAGE->requires->js_call_amd(
+        'mod_kanban/main',
+        'init',
+        ['mod_kanban_render_container-' . $cm->id . '-' . $bid, $cm->id, $bid]
+    );
+}
 
 echo $OUTPUT->footer();
