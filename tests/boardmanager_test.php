@@ -17,7 +17,7 @@
 namespace mod_kanban;
 
 use context_course;
-
+use PHPUnit\Framework\Attributes\Group;
 /**
  * Unit test for mod_kanban
  *
@@ -231,6 +231,7 @@ final class boardmanager_test extends \advanced_testcase {
      *
      * @return void
      */
+    #[Group('baseline')]
     public function test_add_column(): void {
         global $DB;
 
@@ -253,6 +254,10 @@ final class boardmanager_test extends \advanced_testcase {
         $this->assertEquals(join(',', $columnids), $boardmanager->get_board()->sequence);
 
         $this->assertEquals(1, $DB->count_records('kanban_column', ['id' => $columnid]));
+
+        $columnid = $boardmanager->add_column($columnids[3], ['title' => 'column with "quotes"']);
+        $columntitle = $DB->get_field('kanban_column', 'title', ['id' => $columnid]);
+        $this->assertEquals('column with &quot;quotes&quot;', $columntitle);
     }
 
     /**

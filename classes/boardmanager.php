@@ -442,7 +442,7 @@ class boardmanager {
             $data = array_merge($defaults, $data, $defaultsfixed);
 
             // Sanitize title to be extra safe.
-            $data['title'] = clean_param($data['title'], PARAM_TEXT);
+            $data['title'] = s($data['title']);
             try {
                 $transaction = $DB->start_delegated_transaction();
                 $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $this->board->id]);
