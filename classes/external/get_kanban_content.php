@@ -375,7 +375,7 @@ class get_kanban_content extends external_api {
         $capabilities = [
             'addcard' => has_capability('mod/kanban:addcard', $context),
             'manageallcards' => has_capability('mod/kanban:manageallcards', $context),
-            'manageassignedcards' => has_capability('mod/kanban:manageallcards', $context),
+            'manageassignedcards' => has_capability('mod/kanban:manageassignedcards', $context),
             'assignself' => has_capability('mod/kanban:assignself', $context),
             'assignothers' => has_capability('mod/kanban:assignothers', $context),
             'managecolumns' => has_capability('mod/kanban:managecolumns', $context),
