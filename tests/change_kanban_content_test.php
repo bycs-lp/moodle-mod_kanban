@@ -17,8 +17,7 @@
 namespace mod_kanban;
 
 use mod_kanban\external\change_kanban_content;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Unit test for mod_kanban
@@ -28,9 +27,8 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @author      Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
+ * @covers      \mod_kanban\external\change_kanban_content
  */
-#[RunTestsInSeparateProcesses]
-#[CoversClass(change_kanban_content::class)]
 final class change_kanban_content_test extends \advanced_testcase {
     /** @var \stdClass The course used for testing */
     private \stdClass $course;
@@ -558,6 +556,40 @@ final class change_kanban_content_test extends \advanced_testcase {
             $this->kanban->cmid,
             $this->otherkanbanboardid,
             ['cardid' => $this->otherkanbancardid, 'userid' => $this->users[0]->id]
+        );
+    }
+
+    /**
+     * Test for assigning a user to a card when the user is not enrolled in the course.
+     * @return void
+     * @covers      \mod_kanban\external\change_kanban_content::assign_user
+     */
+    #[Group('baseline')]
+    public function test_assign_user_not_enrolled(): void {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/lib/externallib.php');
+
+        $this->resetAfterTest();
+        $this->setUser($this->users[2]);
+
+        $boardmanager = new boardmanager($this->kanban->cmid);
+        $boardid = $boardmanager->create_board();
+        $boardmanager->load_board($boardid);
+        $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $boardid]);
+        $cardid = $boardmanager->add_card($columnids[0], 0, ['title' => 'Testcard']);
+
+        $unenrolleduser = $this->getDataGenerator()->create_user(
+            [
+                'email' => 'not@enroll.ed',
+                'username' => 'notenrolled',
+            ]
+        );
+
+        $this->expectException(\moodle_exception::class);
+        change_kanban_content::assign_user(
+            $this->kanban->cmid,
+            $boardid,
+            ['cardid' => $cardid, 'userid' => $unenrolleduser->id]
         );
     }
 
