@@ -1131,7 +1131,11 @@ class boardmanager {
         $cardupdate['hasdescription'] = trim($description) !== '' || $cardupdate['hasattachment'];
         if (!empty($cardupdate['description'])) {
             $cardupdate['description'] = file_rewrite_pluginfile_urls(
-                $cardupdate['description'],
+                format_text(
+                    $cardupdate['description'],
+                    $cardupdate['descriptionformat'] ?? $card['descriptionformat'] ?? FORMAT_HTML,
+                    ['context' => $context]
+                ),
                 'pluginfile.php',
                 $context->id,
                 'mod_kanban',
