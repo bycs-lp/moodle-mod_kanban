@@ -575,7 +575,7 @@ export default class extends KanbanComponent {
             if (options.background === undefined) {
                 this.getElement().removeAttribute('style');
             } else {
-                this.getElement().setAttribute('style', 'background-color: ' + options.background);
+                this.getElement().style.setProperty('background-color', options.background);
             }
         }
         // Enable/disable dragging and inplace editing (e.g. if user is not assigned to the card anymore).

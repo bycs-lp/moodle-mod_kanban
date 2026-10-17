@@ -1024,7 +1024,11 @@ class boardmanager {
             $data['options'] = helper::sanitize_json_string($data['options']);
         }
         if (!empty($data['color'])) {
-            $data['options'] = json_encode(['background' => $data['color']]);
+            $color = $data['color'];
+            if (strlen($color) != 7 || $color[0] != '#' || !ctype_xdigit(substr($color, 1))) {
+                $color = '#ffffff';
+            }
+            $data['options'] = json_encode(['background' => $color]);
         }
         $card = (array) $this->get_card($cardid);
         $cardupdate = [];
