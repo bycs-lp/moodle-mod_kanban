@@ -496,4 +496,44 @@ final class boardmanager_test extends \advanced_testcase {
         $this->assertEquals(1, $DB->count_records('kanban_card', ['title' => 'Testcard2', 'kanban_board' => $personalboardid1]));
         $this->assertEquals(0, $DB->count_records('kanban_card', ['title' => 'Testcard2', 'kanban_board' => $personalboardid2]));
     }
+
+    #[\PHPUnit\Framework\Attributes\Group('baseline')]
+    /**
+     * Test that a card colour carrying additional CSS declarations is not stored.
+     */
+    public function test_update_card_rejects_invalid_color(): void {
+        global $DB;
+
+        $this->setUser($this->users[0]);
+        $boardmanager = new boardmanager($this->kanban->cmid);
+        $boardid = $boardmanager->create_board();
+        $boardmanager->load_board($boardid);
+        $columnid = $DB->get_field('kanban_column', 'id', ['kanban_board' => $boardid], IGNORE_MULTIPLE);
+        $cardid = $boardmanager->add_card($columnid, 0, ['title' => 'Testcard']);
+
+        $boardmanager->update_card($cardid, ['color' => 'red; position:fixed; background-image:url(https://example.com/x)']);
+
+        $options = json_decode($DB->get_field('kanban_card', 'options', ['id' => $cardid]));
+        $this->assertEquals('#ffffff', $options->background);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Group('baseline')]
+    /**
+     * Test that a valid card colour is stored.
+     */
+    public function test_update_card_accepts_valid_color(): void {
+        global $DB;
+
+        $this->setUser($this->users[0]);
+        $boardmanager = new boardmanager($this->kanban->cmid);
+        $boardid = $boardmanager->create_board();
+        $boardmanager->load_board($boardid);
+        $columnid = $DB->get_field('kanban_column', 'id', ['kanban_board' => $boardid], IGNORE_MULTIPLE);
+        $cardid = $boardmanager->add_card($columnid, 0, ['title' => 'Testcard']);
+
+        $boardmanager->update_card($cardid, ['color' => '#1A2b3c']);
+
+        $options = json_decode($DB->get_field('kanban_card', 'options', ['id' => $cardid]));
+        $this->assertEquals('#1A2b3c', $options->background);
+    }
 }
