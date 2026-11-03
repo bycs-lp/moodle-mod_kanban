@@ -940,7 +940,12 @@ class boardmanager {
         $update['id'] = $DB->insert_record('kanban_discussion_comment', $update);
         $update['candelete'] = true;
         $update['username'] = fullname($USER);
-        $update['content'] = format_text($update['content'], FORMAT_HTML);
+        $update['content'] = format_text(
+            $update['content'],
+            FORMAT_HTML,
+            ['para' => false, 'context' => context_module::instance($this->cmid)]
+        );
+        $update['content'] = nl2br($update['content']);
         if (!empty($this->kanban->usenumbers) && !empty($this->kanban->linknumbers)) {
             $update['content'] = numberfilter::filter($update['content']);
         }
