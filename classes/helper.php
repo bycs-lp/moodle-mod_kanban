@@ -236,6 +236,7 @@ class helper {
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $templatename = 'message_' . $messagename;
         $data->messagename = $messagename;
+        $data->boardname = $cm->name;
 
         $message->notification = 1;
         $url = $cm->get_url();
