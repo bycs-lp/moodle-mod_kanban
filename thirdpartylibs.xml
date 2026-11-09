@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>amd/src/DragDropTouch.js</location>
+    <name>DragDropTouch</name>
+    <description>Drag and drop functionality for touch devices</description>
+    <license>MIT</license>
+    <repository>https://github.com/Bernardo-Castilho/Bernardo-Castilho.github.io/</repository>
+    <copyrights>
+      <copyright>Bernardo de Castilho, https://bernardo-castilho.github.io</copyright>
+    </copyrights>
+  </library>
+</libraries>

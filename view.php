@@ -117,6 +117,7 @@ echo $OUTPUT->render_from_template(
     ]
 );
 
+$PAGE->requires->js_call_amd('mod_kanban/DragDropTouch', 'init');
 $PAGE->requires->js_call_amd('mod_kanban/main', 'init', ['mod_kanban_render_container-' . $cm->id, $cm->id, $boardid]);
 
 echo $OUTPUT->footer();
