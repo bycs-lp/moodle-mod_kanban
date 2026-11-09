@@ -113,7 +113,7 @@ class get_kanban_content extends external_api {
                         'liveupdate' => new external_value(PARAM_INT, 'seconds between two live updates'),
                         'template' => new external_value(PARAM_INT, 'boardid for template', VALUE_OPTIONAL, 0),
                         'groupmode' => new external_value(PARAM_INT, 'group mode'),
-                        'groupselector' => new external_value(PARAM_RAW, 'group selector'),
+                        'groupselector' => new external_value(PARAM_RAW, 'group selector', VALUE_OPTIONAL),
                         'userboards' => new external_value(PARAM_INT, 'userboards'),
                         'history' => new external_value(PARAM_INT, 'history'),
                         'updatefails' => new external_value(PARAM_INT, 'updatefails', VALUE_OPTIONAL, 0),
@@ -488,7 +488,9 @@ class get_kanban_content extends external_api {
         $common->liveupdate = get_config('mod_kanban', 'liveupdatetime');
         $common->userboards = $kanban->userboards;
         $common->groupmode = $groupmode;
-        $common->groupselector = $groupselector;
+        if (!$asupdate) {
+            $common->groupselector = $groupselector;
+        }
         $common->history = $kanban->history;
         $common->updatefails = 0;
         $common->usenumbers = $kanban->usenumbers;
