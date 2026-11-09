@@ -268,7 +268,7 @@ export default class extends KanbanComponent {
         const el = this.getElement(selectors.COLUMNINNER, this.id);
         let cardcount = this.getElements(selectors.CARD).length;
         if (element.sequence !== undefined) {
-            let sequence = element.sequence.split(',');
+            let sequence = element.sequence.trim() == '' ? [] : element.sequence.split(',');
             cardcount = sequence.length;
             // Remove all cards from frontend that are no longer present in the database.
             [...el.children]
