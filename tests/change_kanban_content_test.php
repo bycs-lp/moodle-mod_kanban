@@ -90,6 +90,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @covers \mod_kanban\external\change_kanban_content::add_column
      * @return void
      */
+    #[Group('baseline')]
     public function test_add_column(): void {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/lib/externallib.php');
@@ -100,7 +101,10 @@ final class change_kanban_content_test extends \advanced_testcase {
         $boardmanager = new boardmanager($this->kanban->cmid);
         $boardid = $boardmanager->create_board();
         $boardmanager->load_board($boardid);
-        $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $boardid]);
+        $columnids = $DB->get_fieldset_sql(
+            "SELECT id FROM {kanban_column} WHERE kanban_board = :id ORDER BY id",
+            ['id' => $boardid]
+        );
 
         $returnvalue = change_kanban_content::add_column(
             $this->kanban->cmid,
