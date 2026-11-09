@@ -450,7 +450,6 @@ class boardmanager {
 
                 $this->board->sequence = helper::heal_missing_columns($this->board->sequence, $columnids);
 
-                helper::update_cached_board($this->board->id);
                 $update = [
                     'id' => $this->board->id,
                     'sequence' => helper::sequence_add_after($this->board->sequence, $aftercol, $data['id']),
@@ -458,14 +457,17 @@ class boardmanager {
                 ];
                 $DB->update_record('kanban_board', $update);
                 $transaction->allow_commit();
+
+                helper::update_cached_board($update['id']);
+                helper::update_cached_timestamp($this->board->id, constants::MOD_KANBAN_COLUMN, $data['timemodified']);
+
+                $this->formatter->put('board', $update);
+                $this->formatter->put('columns', $data);
+
+                return $data['id'];
             } catch (\Exception $e) {
                 $transaction->rollback($e);
             }
-            helper::update_cached_board($update['id']);
-
-            $this->formatter->put('board', $update);
-            $this->formatter->put('columns', $data);
-            return $data['id'];
         }
         return 0;
     }
@@ -678,10 +680,10 @@ class boardmanager {
                 );
                 helper::update_cached_timestamp($this->board->id, constants::MOD_KANBAN_CARD, $update['timemodified']);
             }
+            helper::update_cached_timestamp($this->board->id, constants::MOD_KANBAN_COLUMN, $update['timemodified']);
         } catch (\Exception $e) {
             $transaction->rollback($e);
         }
-        helper::update_cached_timestamp($this->board->id, constants::MOD_KANBAN_COLUMN, $update['timemodified']);
     }
 
     /**
