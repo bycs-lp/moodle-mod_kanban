@@ -131,8 +131,7 @@ function kanban_supports($feature) {
  * @throws dml_exception
  */
 function kanban_inplace_editable($itemtype, $itemid, $newvalue) {
-    global $CFG, $USER;
-    require_once($CFG->libdir . '/externallib.php');
+    global $USER;
     $boardmanager = new boardmanager();
 
     if ($itemtype == 'card') {
@@ -145,7 +144,7 @@ function kanban_inplace_editable($itemtype, $itemid, $newvalue) {
     }
 
     $context = context_module::instance($boardmanager->get_cminfo()->id);
-    external_api::validate_context($context);
+    \core_external\external_api::validate_context($context);
 
     if ($itemtype == 'card') {
         if (!$boardmanager->can_user_manage_specific_card($card->id)) {

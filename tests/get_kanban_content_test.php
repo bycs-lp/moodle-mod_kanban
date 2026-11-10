@@ -26,7 +26,6 @@ use PHPUnit\Framework\Attributes\Group;
  * @copyright   2026 ISB Bayern
  * @author      Thomas Schönlein
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @runTestsInSeparateProcesses
  * @covers      \mod_kanban\external\get_kanban_content
  */
 final class get_kanban_content_test extends \advanced_testcase {
@@ -100,11 +99,8 @@ final class get_kanban_content_test extends \advanced_testcase {
      * @return array Ids of the users in the payload
      */
     private function get_userids_of_payload(int $boardid): array {
-        global $CFG;
-        require_once($CFG->dirroot . '/lib/externallib.php');
-
         $result = get_kanban_content::get_kanban_content_init($this->kanban->cmid, $boardid, 0);
-        $result = \external_api::clean_returnvalue(get_kanban_content::get_kanban_content_init_returns(), $result);
+        $result = \core_external\external_api::clean_returnvalue(get_kanban_content::get_kanban_content_init_returns(), $result);
         $userids = [];
         foreach ($result['users'] as $user) {
             $userids[] = (int) $user['id'];

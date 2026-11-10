@@ -16,6 +16,7 @@
 
 namespace mod_kanban;
 
+use core_external\external_api;
 use mod_kanban\external\change_kanban_content;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -26,7 +27,6 @@ use PHPUnit\Framework\Attributes\Group;
  * @copyright   2023-2026 ISB Bayern
  * @author      Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @runTestsInSeparateProcesses
  * @covers      \mod_kanban\external\change_kanban_content
  */
 final class change_kanban_content_test extends \advanced_testcase {
@@ -92,8 +92,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      */
     #[Group('baseline')]
     public function test_add_column(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -111,7 +110,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['aftercol' => 0, 'title' => 'Testcolumn']
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::add_column_returns(),
             $returnvalue
         );
@@ -133,7 +132,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['aftercol' => $columnids[3], 'title' => 'Testcolumn 2']
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::add_column_returns(),
             $returnvalue
         );
@@ -161,8 +160,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_add_card(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -176,7 +174,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['aftercard' => 0, 'columnid' => $columnid, 'title' => 'Testcard']
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::add_card_returns(),
             $returnvalue
         );
@@ -199,7 +197,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['aftercard' => $cardid, 'columnid' => $columnid, 'title' => 'Testcard 2']
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::add_card_returns(),
             $returnvalue
         );
@@ -225,8 +223,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_move_column(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -234,13 +231,16 @@ final class change_kanban_content_test extends \advanced_testcase {
         $boardmanager = new boardmanager($this->kanban->cmid);
         $boardid = $boardmanager->create_board();
         $boardmanager->load_board($boardid);
-        $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $boardid]);
+        $columnids = $DB->get_fieldset_sql(
+            "SELECT id FROM {kanban_column} WHERE kanban_board = :id ORDER BY id",
+            ['id' => $boardid]
+        );
         $returnvalue = change_kanban_content::move_column(
             $this->kanban->cmid,
             $boardid,
             ['aftercol' => 0, 'columnid' => $columnids[2]]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::move_column_returns(),
             $returnvalue
         );
@@ -257,7 +257,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['aftercol' => $columnids[1], 'columnid' => $columnids[0]]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::move_column_returns(),
             $returnvalue
         );
@@ -283,8 +283,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_move_card(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -303,7 +302,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[0]->id, 'aftercard' => 0, 'columnid' => $columnids[2]]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::move_card_returns(),
             $returnvalue
         );
@@ -326,7 +325,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[0]->id, 'aftercard' => $cards[2]->id, 'columnid' => $columnids[2]]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::move_card_returns(),
             $returnvalue
         );
@@ -343,7 +342,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[1]->id, 'aftercard' => $cards[2]->id, 'columnid' => $columnids[2]]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::move_card_returns(),
             $returnvalue
         );
@@ -375,8 +374,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_delete_card(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -395,7 +393,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[0]->id]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::delete_card_returns(),
             $returnvalue
         );
@@ -423,8 +421,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_delete_column(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -443,7 +440,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['columnid' => $columnids[0]]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::delete_column_returns(),
             $returnvalue
         );
@@ -474,8 +471,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_assign_unassign_user(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -494,7 +490,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[2]->id, 'userid' => $this->users[0]->id]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::assign_user_returns(),
             $returnvalue
         );
@@ -511,7 +507,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[2]->id, 'userid' => $this->users[2]->id]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::assign_user_returns(),
             $returnvalue
         );
@@ -528,7 +524,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[2]->id, 'userid' => $this->users[0]->id]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::unassign_user_returns(),
             $returnvalue
         );
@@ -544,7 +540,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[2]->id, 'userid' => $this->users[2]->id]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::unassign_user_returns(),
             $returnvalue
         );
@@ -570,8 +566,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      */
     #[Group('baseline')]
     public function test_assign_user_not_enrolled(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -603,8 +598,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_set_card_complete(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -623,7 +617,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[2]->id, 'state' => 1]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::set_card_complete_returns(),
             $returnvalue
         );
@@ -639,7 +633,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cards[2]->id, 'state' => 0]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::set_card_complete_returns(),
             $returnvalue
         );
@@ -664,8 +658,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_push_card_copy(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         // Set to the teacher to have permissions to push cards to other kanbans.
@@ -688,7 +681,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cardid]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::push_card_copy_returns(),
             $returnvalue
         );
@@ -713,8 +706,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_duplicate_card(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -731,7 +723,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cardid]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::duplicate_card_returns(),
             $returnvalue
         );
@@ -756,8 +748,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_delete_board(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -769,7 +760,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $this->kanban->cmid,
             $boardid
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::delete_board_returns(),
             $returnvalue
         );
@@ -788,8 +779,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_save_as_template(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -803,7 +793,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $this->kanban->cmid,
             $boardid
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::save_as_template_returns(),
             $returnvalue
         );
@@ -822,8 +812,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_delete_discussion_message(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -839,7 +828,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['messageid' => $messageid]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::delete_discussion_message_returns(),
             $returnvalue
         );
@@ -859,8 +848,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_add_discussion_message(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -875,7 +863,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['cardid' => $cardid, 'message' => 'Test Message']
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::add_discussion_message_returns(),
             $returnvalue
         );
@@ -897,8 +885,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_set_column_locked(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -911,7 +898,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['columnid' => $columnid, 'state' => 1]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::set_column_locked_returns(),
             $returnvalue
         );
@@ -932,8 +919,7 @@ final class change_kanban_content_test extends \advanced_testcase {
      * @return void
      */
     public function test_set_board_columns_locked(): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/lib/externallib.php');
+        global $DB;
 
         $this->resetAfterTest();
         $this->setUser($this->users[2]);
@@ -944,7 +930,7 @@ final class change_kanban_content_test extends \advanced_testcase {
             $boardid,
             ['state' => 1]
         );
-        $returnvalue = \external_api::clean_returnvalue(
+        $returnvalue = external_api::clean_returnvalue(
             change_kanban_content::set_board_columns_locked_returns(),
             $returnvalue
         );

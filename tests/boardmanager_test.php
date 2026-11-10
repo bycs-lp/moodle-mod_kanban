@@ -276,7 +276,10 @@ final class boardmanager_test extends \advanced_testcase {
         $boardmanager = new boardmanager($this->kanban->cmid);
         $boardid = $boardmanager->create_board();
         $boardmanager->load_board($boardid);
-        $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $boardid]);
+        $columnids = $DB->get_fieldset_sql(
+            "SELECT id FROM {kanban_column} WHERE kanban_board = :id ORDER BY id",
+            ['id' => $boardid]
+        );
         $boardmanager->move_column($columnids[2], 0);
         $boardmanager->load_board($boardid);
         $this->assertEquals(join(',', [$columnids[2], $columnids[0], $columnids[1]]), $boardmanager->get_board()->sequence);
