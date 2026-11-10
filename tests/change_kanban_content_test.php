@@ -231,7 +231,10 @@ final class change_kanban_content_test extends \advanced_testcase {
         $boardmanager = new boardmanager($this->kanban->cmid);
         $boardid = $boardmanager->create_board();
         $boardmanager->load_board($boardid);
-        $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $boardid]);
+        $columnids = $DB->get_fieldset_sql(
+            "SELECT id FROM {kanban_column} WHERE kanban_board = :id ORDER BY id",
+            ['id' => $boardid]
+        );
         $returnvalue = change_kanban_content::move_column(
             $this->kanban->cmid,
             $boardid,
