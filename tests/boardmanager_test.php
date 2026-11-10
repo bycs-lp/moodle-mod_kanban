@@ -240,7 +240,10 @@ final class boardmanager_test extends \advanced_testcase {
         $boardmanager = new boardmanager($this->kanban->cmid);
         $boardid = $boardmanager->create_board();
         $boardmanager->load_board($boardid);
-        $columnids = $DB->get_fieldset_select('kanban_column', 'id', 'kanban_board = :id', ['id' => $boardid]);
+        $columnids = $DB->get_fieldset_sql(
+            "SELECT id FROM {kanban_column} WHERE kanban_board = :id ORDER BY id",
+            ['id' => $boardid]
+        );
         $columnid = $boardmanager->add_column(0, ['title' => 'Testcolumn']);
         $columnids = array_merge([$columnid], $columnids);
         $boardmanager->load_board($boardid);
