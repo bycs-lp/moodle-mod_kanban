@@ -24,6 +24,6 @@
         "cardid": 3
     }
 }}
-<div id="mod_kanban_render_container-{{cmid}}" class="mod_kanban_render_container container-fluid" data-cmid="{{cmid}}" data-id="{{id}}" data-cardid="{{cardid}}">
+<div id="mod_kanban_render_container-{{cmid}}-{{id}}" class="mod_kanban_render_container container-fluid {{#allboards}}mod_kanban_allboards{{/allboards}}" data-cmid="{{cmid}}" data-id="{{id}}" data-cardid="{{cardid}}">
     {{>mod_kanban/loadingplaceholder}}
 </div>
