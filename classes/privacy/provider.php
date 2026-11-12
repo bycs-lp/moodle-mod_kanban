@@ -534,6 +534,7 @@ class provider implements
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
         $userid = $contextlist->get_user()->id;
+        $fs = get_file_storage();
         foreach ($contextlist as $context) {
             if (!$context instanceof \context_module) {
                 return;
@@ -598,6 +599,10 @@ class provider implements
                 $DB->delete_records_select('kanban_assignee', 'kanban_card ' . $insql, $params);
                 // Delete all discussions.
                 $DB->delete_records_select('kanban_discussion_comment', 'kanban_card ' . $insql, $params);
+                // Delete all attachments.
+                foreach ($cardids as $cardid) {
+                    $fs->delete_area_files($context->id, 'mod_kanban', 'attachments', $cardid);
+                }
             }
 
             $DB->delete_records('kanban_card', ['kanban_board' => $boardid]);
