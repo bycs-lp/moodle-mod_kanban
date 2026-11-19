@@ -16,6 +16,8 @@
 
 namespace mod_kanban;
 
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Tests for Kanban board number filter
  *
@@ -42,5 +44,20 @@ final class numberfilter_test extends \advanced_testcase {
     public function test_filter_without_numbers(): void {
         $text = 'This is a test without numbers';
         $this->assertEquals($text, numberfilter::filter($text));
+    }
+
+    /**
+     * Test number filter with HTML tags
+     */
+    #[Group('baseline')]
+    public function test_filter_with_html_tags(): void {
+        $text = 'A<b>#1234</b>, <i>#5</i>';
+        $expected = 'A<b><a class="mod_kanban_card_number" data-id="1234">#1234</a></b>, ' .
+            '<i><a class="mod_kanban_card_number" data-id="5">#5</a></i>';
+        $this->assertEquals($expected, numberfilter::filter($text));
+
+        $text = 'Color:<a style="color: #123456">#123456</a>';
+        $expected = 'Color:<a style="color: #123456"><a class="mod_kanban_card_number" data-id="123456">#123456</a></a>';
+        $this->assertEquals($expected, numberfilter::filter($text));
     }
 }

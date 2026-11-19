@@ -37,11 +37,22 @@ class numberfilter {
             return $text;
         }
 
+        $tags = [];
+        // Save existing tags to avoid replacing them with the number filter.
+        filter_save_tags($text, $tags);
+
         $pattern = '/#(\d+)/';
+
         $text = preg_replace_callback($pattern, function ($matches) {
             $number = (int)$matches[1];
             return '<a class="mod_kanban_card_number" data-id="' . $number . '">#' . $number . '</a>';
         }, $text);
+
+        // Restore the saved tags.
+        if (!empty($tags)) {
+            $text = str_replace(array_keys($tags), $tags, $text);
+        }
+
         return $text;
     }
 }
