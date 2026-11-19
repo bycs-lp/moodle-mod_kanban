@@ -307,6 +307,7 @@ export default class extends KanbanComponent {
             title: element.title,
             options: element.options,
             sequence: element.sequence,
+            cardcount: element.cardcount ?? 0,
         }, exporter.exportCapabilities(this.reactive.state));
         let placeholder = document.createElement('li');
         placeholder.setAttribute('data-id', data.id);
