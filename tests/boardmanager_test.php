@@ -18,6 +18,7 @@ namespace mod_kanban;
 
 use context_course;
 use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit test for mod_kanban
  *
