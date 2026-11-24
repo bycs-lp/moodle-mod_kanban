@@ -271,7 +271,7 @@ class provider implements
         // Array to store all the data to be exported, this is needed to export the data sorted by course module.
         // Structure of the array:
         // $cms[cmid][boardid][columnid] =
-        // ['cards' => [cardid] => ['carddata' => ... , 'historydata' => ... , 'discussiondata' => ...]
+        // ['cards' => [cardid] => ['card' => ... , 'history' => ... , 'discussion' => ...]
         // 'columndata' => ['columntitle']].
         $cms = [];
 
@@ -342,8 +342,8 @@ class provider implements
         $entries = $DB->get_records_sql($sql, $params);
 
         foreach ($entries as $entry) {
-            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid][(int)$entry->cardid] = [
-                'carddata' => [
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid] = [
+                'card' => [
                     'title' => $entry->cardtitle,
                     'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
                 ],
@@ -380,7 +380,7 @@ class provider implements
         // Add history data to the corresponding card data. If the user is not the one who triggered the history
         // action or the affected user, set the userid to 0 to avoid exporting other users' ids.
         foreach ($entries as $entry) {
-            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid]['historydata'][] = [
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid]['history'][] = [
                 'action' => $entry->historyaction,
                 'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
                 'userid' => $entry->historyuserid == $userid ? $entry->historyuserid : 0,
@@ -412,11 +412,9 @@ class provider implements
         $entries = $DB->get_records_sql($sql, $params);
 
         foreach ($entries as $entry) {
-            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid] = [
-                'discussiondata' => [
-                    'content' => $entry->content,
-                    'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
-                ],
+            $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid]['discussion'][] = [
+                'content' => $entry->content,
+                'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
             ];
         }
 
@@ -449,7 +447,7 @@ class provider implements
         $entries = $DB->get_records_sql($sql, $params);
         foreach ($entries as $entry) {
             $cms[(int)$entry->cmid][(int)$entry->boardid][(int)$entry->columnid]['cards'][(int)$entry->cardid] = [
-                'carddata' => [
+                'card' => [
                     'title' => $entry->cardtitle,
                     'timemodified' => \core_privacy\local\request\transform::datetime($entry->timemodified),
                     'assignee' => $entry->assigneeuserid ?? 0,
@@ -523,7 +521,7 @@ class provider implements
             $DB->delete_records_select('kanban_history', 'kanban_board ' . $insql, $params);
         }
         // Delete all boards that are no template boards.
-        $DB->delete_records('kanban_board', ['instance' => $cm->instance, 'template' => 0]);
+        $DB->delete_records('kanban_board', ['kanban_instance' => $cm->instance, 'template' => 0]);
     }
 
     /**
